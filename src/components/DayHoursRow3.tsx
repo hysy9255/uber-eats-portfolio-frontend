@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import type { Day } from "../pages/types/OwnerOnBoardingStep3Location.type";
 import {
   CLOSE_TIME_OPTIONS,
@@ -41,13 +41,64 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
   const [openTimeOptions, setOpenTimeOptions] =
     useState<TimeOption[]>(OPEN_TIME_OPTIONS);
 
+  const initialCloseOption = useMemo(() => {
+    return (
+      closeTimeOptions.find((opt) => opt.value === operatingHours?.closeTime) ??
+      null
+    );
+  }, [closeTimeOptions, operatingHours]);
+
+  const [selectedCloseOption, setSelectedCloseOption] =
+    useState<TimeOption | null>(initialCloseOption);
+
+  const initialOpenOption = useMemo(() => {
+    return (
+      openTimeOptions.find((opt) => opt.value === operatingHours?.openTime) ??
+      null
+    );
+  }, [openTimeOptions, operatingHours]);
+
+  const [selectedOpenOption, setSelectedOpenOption] =
+    useState<TimeOption | null>(initialOpenOption);
+
+  const closeDropdown = useCallback(() => {
+    setSelectedHoursOption(null);
+  }, [setSelectedHoursOption]);
+
+  const openDropdown = (field: string) => {
+    setSelectedHoursOption(field);
+  };
+
+  const disableDropdown = () => {
+    return;
+  };
+
+  const handleOnClickDropdown = (field: string) => {
+    if (closed || open24) return disableDropdown();
+    if (selectedHoursOption === null) {
+      openDropdown(field);
+    } else {
+      closeDropdown();
+    }
+  };
+
+  const onSelectOpenOption = (opt: TimeOption) => {
+    setSelectedOpenOption(opt);
+    closeDropdown();
+    setOpenTime(opt.value);
+  };
+
+  const onSelectCloseOption = (opt: TimeOption) => {
+    setSelectedCloseOption(opt);
+    closeDropdown();
+    setCloseTime(opt.value);
+  };
+
   const handleOnChangeOpen24Checkbox = () => {
     if (closed) {
       setClosed(false);
     }
     setOpen24(!open24);
-    // setOpenTime(null);
-    // setCloseTime(null);
   };
 
   const handleOnChangeClosedCheckbox = () => {
@@ -55,8 +106,6 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
       setOpen24(false);
     }
     setClosed(!closed);
-    // setOpenTime(null);
-    // setCloseTime(null);
   };
 
   useEffect(() => {
@@ -80,6 +129,25 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
     }
   }, [openTime, closeTime]);
 
+  useEffect(() => {
+    if (closed) {
+      setSelectedOpenOption({ value: "closed", label: "Closed" });
+      setSelectedCloseOption({ value: "closed", label: "Closed" });
+      closeDropdown();
+    }
+    if (open24) {
+      setSelectedOpenOption({ value: "00:00", label: "12:00 AM" });
+      setSelectedCloseOption({ value: "24:00", label: "12:00 AM (next day)" });
+      closeDropdown();
+    }
+  }, [closed, open24, closeDropdown]);
+
+  useEffect(() => {
+    if (closed || open24) return;
+    setSelectedOpenOption(initialOpenOption);
+    setSelectedCloseOption(initialCloseOption);
+  }, [closed, open24, initialOpenOption, initialCloseOption]);
+
   return (
     <div className="grid grid-cols-20">
       <div className="col-span-1 text-slate-600 flex items-center">{day}</div>
@@ -89,22 +157,30 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
         <OpenTimeSelect
           field={`hours.${day}.open`}
           options={openTimeOptions}
+          selectedOption={selectedOpenOption}
+          handleOnClickDropdown={() =>
+            handleOnClickDropdown(`hours.${day}.open`)
+          }
+          onSelectOpenOption={onSelectOpenOption}
           selectedHoursOption={selectedHoursOption}
-          setSelectedHoursOption={setSelectedHoursOption}
+          // setSelectedHoursOption={setSelectedHoursOption}
           open24={open24}
           closed={closed}
-          setOpenTime={setOpenTime}
-          operatingHours={operatingHours}
+          // setOpenTime={setOpenTime}
+          // operatingHours={operatingHours}
         />
         <CloseTimeSelect
           field={`hours.${day}.close`}
           options={closeTimeOptions}
+          selectedOption={selectedCloseOption}
+          handleOnClickDropdown={() =>
+            handleOnClickDropdown(`hours.${day}.close`)
+          }
+          onSelectCloseOption={onSelectCloseOption}
           selectedHoursOption={selectedHoursOption}
-          setSelectedHoursOption={setSelectedHoursOption}
           open24={open24}
           closed={closed}
-          setCloseTime={setCloseTime}
-          operatingHours={operatingHours}
+          // operatingHours={operatingHours}
         />
       </div>
 

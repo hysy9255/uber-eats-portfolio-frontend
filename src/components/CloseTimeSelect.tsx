@@ -1,82 +1,87 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
 import { type TimeOption } from "../utils/timeOptions";
 import DownChevron from "./DownChevron";
-import type { OperatingHours } from "../pages/RestaurantPage";
 
 interface CloseTimeSelectProps {
   field: string;
   options: TimeOption[];
+  selectedOption: TimeOption | null;
+  handleOnClickDropdown: () => void;
+  onSelectCloseOption: (opt: TimeOption) => void;
   selectedHoursOption: string | null;
-  setSelectedHoursOption: (option: string | null) => void;
+  // setSelectedHoursOption: (option: string | null) => void;
   open24: boolean;
   closed: boolean;
-  setCloseTime: (time: string | null) => void;
-  operatingHours?: OperatingHours;
+  // setCloseTime: (time: string | null) => void;
+  // operatingHours?: OperatingHours;
 }
 
 const CloseTimeSelect: React.FC<CloseTimeSelectProps> = ({
   field,
   options,
+  selectedOption,
+  handleOnClickDropdown,
+  onSelectCloseOption,
   selectedHoursOption,
-  setSelectedHoursOption,
+  // setSelectedHoursOption,
   open24,
   closed,
-  setCloseTime,
-  operatingHours,
+  // setCloseTime,
+  // operatingHours,
 }) => {
-  const initialOption = useMemo(() => {
-    return (
-      options.find((opt) => opt.value === operatingHours?.closeTime) ?? null
-    );
-  }, [options, operatingHours]);
-  const [option, setOption] = useState<TimeOption | null>(initialOption);
+  // const initialOption = useMemo(() => {
+  //   return (
+  //     options.find((opt) => opt.value === operatingHours?.closeTime) ?? null
+  //   );
+  // }, [options, operatingHours]);
+  // const [option, setOption] = useState<TimeOption | null>(initialOption);
 
   const dropdownOpen = selectedHoursOption === field;
-  const label = option?.label ?? "Close time";
+  const label = selectedOption?.label ?? "Close time";
+  // const label = option?.label ?? "Close time";
 
-  const closeDropdown = useCallback(() => {
-    setSelectedHoursOption(null);
-  }, [setSelectedHoursOption]);
+  // const closeDropdown = useCallback(() => {
+  //   setSelectedHoursOption(null);
+  // }, [setSelectedHoursOption]);
 
-  const openDropdown = (field: string) => {
-    setSelectedHoursOption(field);
-  };
+  // const openDropdown = (field: string) => {
+  //   setSelectedHoursOption(field);
+  // };
 
-  const disableDropdown = () => {
-    return;
-  };
+  // const disableDropdown = () => {
+  //   return;
+  // };
 
-  const handleOnClick = () => {
-    if (closed || open24) return disableDropdown();
-    if (selectedHoursOption === null) {
-      openDropdown(field);
-    } else {
-      closeDropdown();
-    }
-  };
+  // const handleOnClick = () => {
+  //   if (closed || open24) return disableDropdown();
+  //   if (selectedHoursOption === null) {
+  //     openDropdown(field);
+  //   } else {
+  //     closeDropdown();
+  //   }
+  // };
 
-  const onSelectOption = (opt: TimeOption) => {
-    setOption(opt);
-    closeDropdown();
-    setCloseTime(opt.value);
-  };
+  // const onSelectOption = (opt: TimeOption) => {
+  //   setOption(opt);
+  //   closeDropdown();
+  //   setCloseTime(opt.value);
+  // };
 
-  useEffect(() => {
-    if (closed) {
-      setOption({ value: "closed", label: "Closed" });
-      closeDropdown();
-    }
+  // useEffect(() => {
+  //   if (closed) {
+  //     setOption({ value: "closed", label: "Closed" });
+  //     closeDropdown();
+  //   }
 
-    if (open24) {
-      setOption({ value: "24:00", label: "12:00 AM (next day)" });
-      closeDropdown();
-    }
-  }, [closed, open24, closeDropdown]);
+  //   if (open24) {
+  //     setOption({ value: "24:00", label: "12:00 AM (next day)" });
+  //     closeDropdown();
+  //   }
+  // }, [closed, open24, closeDropdown]);
 
-  useEffect(() => {
-    if (closed || open24) return;
-    setOption(initialOption);
-  }, [closed, open24, initialOption]);
+  // useEffect(() => {
+  //   if (closed || open24) return;
+  //   setOption(initialOption);
+  // }, [closed, open24, initialOption]);
 
   return (
     <div className="relative w-full">
@@ -90,7 +95,7 @@ const CloseTimeSelect: React.FC<CloseTimeSelectProps> = ({
                      }
                      `}
         onClick={() => {
-          handleOnClick();
+          handleOnClickDropdown();
         }}
       >
         <div>{label}</div>
@@ -107,7 +112,7 @@ const CloseTimeSelect: React.FC<CloseTimeSelectProps> = ({
         >
           {options.map((opt) => (
             <div
-              onClick={() => onSelectOption(opt)}
+              onClick={() => onSelectCloseOption(opt)}
               className="px-3 py-1 text-sm hover:bg-gray-100 active:bg-gray-200"
             >
               {opt.label}
