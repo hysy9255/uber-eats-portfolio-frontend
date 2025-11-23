@@ -8,11 +8,8 @@ interface OpenTimeSelectProps {
   handleOnClickDropdown: () => void;
   onSelectOpenOption: (opt: TimeOption) => void;
   selectedHoursOption: string | null;
-  // setSelectedHoursOption: (option: string | null) => void;
   open24: boolean;
   closed: boolean;
-  // setOpenTime: (time: string | null) => void;
-  // operatingHours?: OperatingHours;
 }
 
 const OpenTimeSelect: React.FC<OpenTimeSelectProps> = ({
@@ -22,65 +19,11 @@ const OpenTimeSelect: React.FC<OpenTimeSelectProps> = ({
   handleOnClickDropdown,
   onSelectOpenOption,
   selectedHoursOption,
-  // setSelectedHoursOption,
   open24,
   closed,
-  // setOpenTime,
-  // operatingHours,
 }) => {
-  // const initialOption = useMemo(() => {
-  //   return (
-  //     options.find((opt) => opt.value === operatingHours?.openTime) ?? null
-  //   );
-  // }, [options, operatingHours]);
-  // const [option, setOption] = useState<TimeOption | null>(initialOption);
   const dropdownOpen = selectedHoursOption === field;
   const label = selectedOption?.label ?? "Open time";
-  // const label = option?.label ?? "Open time";
-
-  // const closeDropdown = useCallback(() => {
-  //   setSelectedHoursOption(null);
-  // }, [setSelectedHoursOption]);
-
-  // const openDropdown = (field: string) => {
-  //   setSelectedHoursOption(field);
-  // };
-
-  // const disableDropdown = () => {
-  //   return;
-  // };
-
-  // const handleOnClick = () => {
-  //   if (closed || open24) return disableDropdown();
-  //   if (selectedHoursOption === null) {
-  //     openDropdown(field);
-  //   } else {
-  //     closeDropdown();
-  //   }
-  // };
-
-  // const onSelectOption = (opt: TimeOption) => {
-  //   setOption(opt);
-  //   closeDropdown();
-  //   setOpenTime(opt.value);
-  // };
-
-  // useEffect(() => {
-  //   if (closed) {
-  //     setOption({ value: "closed", label: "Closed" });
-  //     closeDropdown();
-  //   }
-  //   if (open24) {
-  //     setOption({ value: "00:00", label: "12:00 AM" });
-  //     closeDropdown();
-  //   }
-  // }, [closed, open24, closeDropdown]);
-
-  // useEffect(() => {
-  //   if (closed || open24) return;
-  //   setOption(initialOption);
-  // }, [closed, open24, initialOption]);
-
   return (
     <div className="relative w-full">
       <div
