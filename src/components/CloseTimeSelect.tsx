@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { type TimeOption } from "../utils/timeOptions";
 import DownChevron from "./DownChevron";
 import type { OperatingHours } from "../pages/RestaurantPage";
@@ -24,14 +24,12 @@ const CloseTimeSelect: React.FC<CloseTimeSelectProps> = ({
   setCloseTime,
   operatingHours,
 }) => {
-  const getOptionInitialValue = useCallback(() => {
+  const initialOption = useMemo(() => {
     return (
       options.find((opt) => opt.value === operatingHours?.closeTime) ?? null
     );
   }, [options, operatingHours]);
-  const [option, setOption] = useState<TimeOption | null>(() =>
-    getOptionInitialValue()
-  );
+  const [option, setOption] = useState<TimeOption | null>(initialOption);
 
   const dropdownOpen = selectedHoursOption === field;
   const label = option?.label ?? "Close time";
@@ -73,7 +71,12 @@ const CloseTimeSelect: React.FC<CloseTimeSelectProps> = ({
       setOption({ value: "24:00", label: "12:00 AM (next day)" });
       closeDropdown();
     }
-  }, [closed, open24, closeDropdown, setCloseTime, getOptionInitialValue]);
+  }, [closed, open24, closeDropdown]);
+
+  useEffect(() => {
+    if (closed || open24) return;
+    setOption(initialOption);
+  }, [closed, open24, initialOption]);
 
   return (
     <div className="relative w-full">
