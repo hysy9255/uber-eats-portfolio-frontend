@@ -48,15 +48,15 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
     );
   }, [closeTimeOptions, operatingHours]);
 
-  const [selectedCloseOption, setSelectedCloseOption] =
-    useState<TimeOption | null>(initialCloseOption);
-
   const initialOpenOption = useMemo(() => {
     return (
       openTimeOptions.find((opt) => opt.value === operatingHours?.openTime) ??
       null
     );
   }, [openTimeOptions, operatingHours]);
+
+  const [selectedCloseOption, setSelectedCloseOption] =
+    useState<TimeOption | null>(initialCloseOption);
 
   const [selectedOpenOption, setSelectedOpenOption] =
     useState<TimeOption | null>(initialOpenOption);
@@ -163,11 +163,8 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
           }
           onSelectOpenOption={onSelectOpenOption}
           selectedHoursOption={selectedHoursOption}
-          // setSelectedHoursOption={setSelectedHoursOption}
           open24={open24}
           closed={closed}
-          // setOpenTime={setOpenTime}
-          // operatingHours={operatingHours}
         />
         <CloseTimeSelect
           field={`hours.${day}.close`}
@@ -180,7 +177,6 @@ export const DayHoursRow3: React.FC<DayHoursRow3Props> = ({
           selectedHoursOption={selectedHoursOption}
           open24={open24}
           closed={closed}
-          // operatingHours={operatingHours}
         />
       </div>
 
