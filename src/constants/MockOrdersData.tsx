@@ -177,3 +177,57 @@ export const mostReviewed = [
   "French fries",
   "Milkshake",
 ];
+
+export type MenuRankingDataType = {
+  name: string;
+  numOfReviews: number;
+  numOfSold: number;
+  ratings: number;
+  soldRank?: number;
+  reviewsRank?: number;
+  ratingsRank?: number;
+};
+
+export const menuRankingTableColumns = [
+  "",
+  "Menu",
+  "# of Sold",
+  "# of Reviews",
+  "Ratings",
+  "Sold Rank",
+  "Reviews Rank",
+  "Ratings Rank",
+];
+
+export const menuRankingData: MenuRankingDataType[] = [
+  {
+    name: "Kung Pao Chicken",
+    numOfReviews: 20,
+    numOfSold: 100,
+    ratings: 4,
+  },
+  {
+    name: "Green Papaya Salad",
+    numOfReviews: 53,
+    numOfSold: 240,
+    ratings: 4.5,
+  },
+  {
+    name: "Orange Chicken",
+    numOfReviews: 3,
+    numOfSold: 30,
+    ratings: 2.6,
+  },
+  {
+    name: "Spicy Curry Noodles",
+    numOfReviews: 24,
+    numOfSold: 40,
+    ratings: 3.9,
+  },
+  {
+    name: "Five Cheese Pasta",
+    numOfReviews: 62,
+    numOfSold: 57,
+    ratings: 4.2,
+  },
+];

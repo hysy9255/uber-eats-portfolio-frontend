@@ -1,10 +1,10 @@
 import { useState } from "react";
-import WizardShell from "../components/WizardShell";
-import ImageUploadZone from "../components/ImageUploadZone";
-import CsvUploadZone from "../components/CsvUploadZone";
+import WizardShell from "../components/Shells/WizardShell";
+import ImageUploadZone from "../components/UploadZones/ImageUploadZone";
+import CsvUploadZone from "../components/UploadZones/CsvUploadZone";
 import { useNavigate } from "react-router-dom";
 import { loadDraft, saveDraft } from "../utils/localDraft";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { CREATE_OWNER_PAGE_STEPS } from "../constants/CreateOwnerPageSteps";
 import { uploadImage } from "../utils/uploadImg";
 import {
@@ -12,11 +12,28 @@ import {
   type DraftItem,
   type IOwnerOnBoardingStep4Form,
 } from "./types/OwnerOnBoardingStep4Menu.type";
+import { customInputCss } from "../constants/CustomInputCss";
+import Dropdown2 from "../components/Dropdowns/Dropdown2";
+import { ownerOnboardStep4DefaultValues } from "../constants/DefaultValues";
+import { DishCategory } from "../constants/DishCategoryEnums";
 
 export default function OwnerOnboardingMenu() {
   const navigate = useNavigate();
-  const defaultValues = loadDraft<IOwnerOnBoardingStep4Form>(OWNER_STEP4_KEY, {
-    items: [],
+  const defaultValues = loadDraft<IOwnerOnBoardingStep4Form>(
+    OWNER_STEP4_KEY,
+    ownerOnboardStep4DefaultValues
+  );
+
+  const methods = useForm<DraftItem>({
+    mode: "onChange",
+    defaultValues: {
+      name: "",
+      price: "",
+      category: DishCategory.Appetizers,
+      description: "",
+      imagePreview: "",
+      imageFile: null,
+    },
   });
 
   const {
@@ -25,17 +42,7 @@ export default function OwnerOnboardingMenu() {
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm<DraftItem>({
-    mode: "onChange",
-    defaultValues: {
-      name: "",
-      price: "",
-      category: "Appetizers",
-      description: "",
-      imagePreview: "",
-      imageFile: null,
-    },
-  });
+  } = methods;
 
   const [fields, setFields] = useState<DraftItem[]>(defaultValues.items);
   const [newPreview, setNewPreview] = useState("");
@@ -77,6 +84,11 @@ export default function OwnerOnboardingMenu() {
   const onContinue = () => navigate("/owner-on-board-step-5");
   const onBack = () => navigate("/owner-on-board-step-3");
 
+  const category = useWatch({ control: methods.control, name: "category" });
+  const setCategory = (dishCategory: DishCategory) => {
+    methods.setValue("category", dishCategory);
+  };
+
   return (
     <WizardShell
       onContinue={onContinue}
@@ -110,7 +122,7 @@ export default function OwnerOnboardingMenu() {
           <div className="flex items-start justify-between">
             <h3 className="text-lg font-semibold">Draft items</h3>
             {/* {errors.items?.message && (
-              <span className="text-sm font-medium text-rose-600">
+              <span className="text-sm font-medism text-red-600">
                 {String(errors.items.message)}
               </span>
             )} */}
@@ -155,7 +167,7 @@ export default function OwnerOnboardingMenu() {
                     <button
                       type="button"
                       onClick={() => onRemove(i)}
-                      className="ml-auto rounded-full px-2 py-1 text-xs ring-1 ring-slate-300 hover:bg-slate-50"
+                      className="ml-auto rounded-full px-2 py-1 text-xs ring-1 ring-slate-300 hover:bg-slate-50 hover:cursor-pointer"
                     >
                       Remove
                     </button>
@@ -179,7 +191,7 @@ export default function OwnerOnboardingMenu() {
             <div className="md:col-span-2">
               <div className="text-sm font-medium mb-1">Photo</div>
               <ImageUploadZone
-                sizeClass="w-full"
+                className="aspect-square"
                 previewSrc={newPreview || undefined}
                 onSelected={onSelectImageUpload}
               />
@@ -196,11 +208,11 @@ export default function OwnerOnboardingMenu() {
                   {...register("name", {
                     required: "Name is required",
                   })}
-                  className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+                  className={customInputCss}
                   placeholder="Kung Pao Chicken"
                 />
                 {errors?.name?.message && (
-                  <span className="text-xs text-rose-600">
+                  <span className="text-sm text-red-600 font-medium">
                     {String(errors?.name?.message)}
                   </span>
                 )}
@@ -208,22 +220,16 @@ export default function OwnerOnboardingMenu() {
 
               <label className="md:col-span-2">
                 <span className="text-sm font-medium">Category</span>
-                <select
-                  {...register("category", {
-                    required: "Category is required",
-                  })}
-                  className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 text-slate-600 outline-none"
-                >
-                  <option>Appetizers</option>
-                  <option>Mains</option>
-                  <option>Noodles</option>
-                  <option>Desserts</option>
-                </select>
-                {errors?.category?.message && (
-                  <span className="text-xs text-rose-600">
-                    {String(errors?.category?.message)}
-                  </span>
-                )}
+                <Dropdown2
+                  option={category}
+                  setOption={setCategory}
+                  options={[
+                    DishCategory.Appetizers,
+                    DishCategory.Mains,
+                    DishCategory.Desserts,
+                    DishCategory.Drinks,
+                  ]}
+                />
               </label>
 
               <label className="md:col-span-2">
@@ -240,11 +246,11 @@ export default function OwnerOnboardingMenu() {
                   inputMode="decimal"
                   step="0.01"
                   min="0.01"
-                  className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+                  className={customInputCss}
                   placeholder="12.00"
                 />
                 {errors?.price?.message && (
-                  <span className="text-xs text-rose-600">
+                  <span className="text-sm text-red-600 font-medium">
                     {String(errors?.price?.message)}
                   </span>
                 )}
@@ -259,16 +265,16 @@ export default function OwnerOnboardingMenu() {
                     // maxLength: { value: 5, message: "Max 5 characters" },
                   })}
                   rows={3}
-                  className="mt-1 w-full rounded-xl ring-1 ring-slate-300 px-3 py-2 outline-none"
+                  className={customInputCss}
                   placeholder="Spicy stir-fry with peanuts, chili and scallions."
                 />
                 {errors?.description?.type === "maxLength" && (
-                  <span className="text-xs text-rose-600">
+                  <span className="text-sm text-red-600 font-medium">
                     {errors.description.message}
                   </span>
                 )}
                 {errors?.description?.message && (
-                  <span className="text-xs text-rose-600">
+                  <span className="text-sm text-red-600 font-medium">
                     {String(errors?.description?.message)}
                   </span>
                 )}
@@ -278,7 +284,7 @@ export default function OwnerOnboardingMenu() {
                 {/* 폼 제출 버튼 → 검증 실행 */}
                 <button
                   type="submit"
-                  className="rounded-full px-4 py-2 text-sm font-semibold bg-black text-white hover:bg-black/90"
+                  className="rounded-full px-4 py-2 text-sm font-semibold bg-black text-white hover:bg-black/90 hover:cursor-pointer"
                 >
                   Add item
                 </button>

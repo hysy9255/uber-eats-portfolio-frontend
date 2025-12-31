@@ -5,7 +5,7 @@ export interface IOwnerOnBoardingStep1Form {
   email: string;
   password: string;
   confirmPassword: string;
-  profileImgUrl?: string;
+  profileImgUrl: string;
 }
 
 export const OWNER_STEP1_KEY = "onboard.owner.step1";

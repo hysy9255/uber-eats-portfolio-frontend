@@ -1,14 +1,12 @@
 import { useState } from "react";
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 import { Link, useNavigate } from "react-router-dom";
 
 import { loadDraft } from "../utils/localDraft";
 import SuccessDialog from "../components/SuccessPopup";
 import { CREATE_CUSTOMER_PAGE_STEPS } from "../constants/CreateCustomerPageSteps";
-import {
-  CUSTOMER_STEP1_KEY,
-  type ICustomerOnBoardingStep1Form,
-} from "./types/CustomerOnBoardingStep1Account.type";
+import // type ICustomerOnBoardingStep1Form,
+"./types/CustomerOnBoardingStep1Account.type";
 import {
   CUSTOMER_STEP2_KEY,
   type ICustomerOnBoardingStep2Form,
@@ -17,17 +15,16 @@ import {
   CustomerStep3RightPanel,
   type ICreateCustomer,
 } from "./types/CustomerOnBoardingStep3Review.type";
-
-const createCustomer = async (payload: ICreateCustomer) => {
-  const res = await fetch(`http://localhost:3002/users/customers`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(await res.text());
-};
+import {
+  STEP1_KEY,
+  type IOnBoardingStep1Form,
+} from "./types/OnBoardingStep1Account.type";
+import {
+  commonAccountOnBoardStep1DefaultValues,
+  customerOnBoardStep2DefaultValues,
+} from "../constants/DefaultValues";
+import { UserRole } from "../constants/UserRoleEnum";
+import { createCustomer } from "../api/userApi";
 
 export default function CustomerOnboardingReview() {
   const navigate = useNavigate();
@@ -35,9 +32,7 @@ export default function CustomerOnboardingReview() {
 
   const handleCreateCustomertSubmit = async (data: ICreateCustomer) => {
     try {
-      await createCustomer({
-        ...data,
-      });
+      await createCustomer(data);
       setShowSuccess(true);
     } catch (err) {
       console.error(err);
@@ -49,13 +44,13 @@ export default function CustomerOnboardingReview() {
     handleCreateCustomertSubmit({
       email: account.email,
       password: account.password,
-      role: "client",
+      role: UserRole.Client,
       firstName: account.firstName,
       lastName: account.lastName,
-      phoneNumber: "010-0000-0000", // 임시
+      phoneNumber: account.phoneNumber,
       deliveryAddress: `${deliveryAddress.streetAddress}, ${deliveryAddress.apt}, ${deliveryAddress.city}, ${deliveryAddress.state} ${deliveryAddress.zip}`,
-      deliveryNotes: deliveryAddress.deliveryNotes,
-      profileImgUrl: account.profileImgUrl,
+      profileImgUrl:
+        account.profileImgUrl === "" ? null : account.profileImgUrl,
     });
   };
 
@@ -63,26 +58,14 @@ export default function CustomerOnboardingReview() {
     navigate("/customer-on-board-step-2");
   };
 
-  const account = loadDraft<ICustomerOnBoardingStep1Form>(CUSTOMER_STEP1_KEY, {
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    profileImgUrl: "",
-  });
+  const account = loadDraft<IOnBoardingStep1Form>(
+    STEP1_KEY,
+    commonAccountOnBoardStep1DefaultValues
+  );
 
   const deliveryAddress = loadDraft<ICustomerOnBoardingStep2Form>(
     CUSTOMER_STEP2_KEY,
-    {
-      streetAddress: "",
-      apt: "",
-      city: "",
-      state: "",
-      zip: "",
-      deliveryNotes: "",
-    }
+    customerOnBoardStep2DefaultValues
   );
 
   return (
@@ -104,7 +87,7 @@ export default function CustomerOnboardingReview() {
             <Link to={"/customer-on-board-step-1"}>
               <button
                 type="button"
-                className="text-sm font-medium text-emerald-700 hover:underline"
+                className="text-sm font-medium text-emerald-700 hover:underline hover:cursor-pointer"
               >
                 Edit
               </button>
@@ -133,7 +116,7 @@ export default function CustomerOnboardingReview() {
             <Link to={"/customer-on-board-step-2"}>
               <button
                 type="button"
-                className="text-sm font-medium text-emerald-700 hover:underline"
+                className="text-sm font-medium text-emerald-700 hover:underline hover:cursor-pointer"
               >
                 Edit
               </button>
@@ -144,9 +127,6 @@ export default function CustomerOnboardingReview() {
             {deliveryAddress.streetAddress}, {deliveryAddress.apt},{" "}
             {deliveryAddress.city}, {deliveryAddress.state}{" "}
             {deliveryAddress.zip}
-          </p>
-          <p className="mt-1 text-sm text-slate-600">
-            Notes: {deliveryAddress.deliveryNotes}
           </p>
         </section>
 

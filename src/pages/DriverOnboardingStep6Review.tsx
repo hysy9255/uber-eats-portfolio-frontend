@@ -1,14 +1,11 @@
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 import { useNavigate } from "react-router-dom";
 import { clearDraft, loadDraft } from "../utils/localDraft";
 
 import { useState } from "react";
 import SuccessDialog from "../components/SuccessPopup";
 import { CREATE_DRIVER_PAGE_STEPS } from "../constants/CreateDriverPageSteps";
-import {
-  DRIVER_STEP1_KEY,
-  type IDriverOnBoardingStep1Form,
-} from "./types/DriverOnBoardingStep1Account.type";
+import { type IDriverOnBoardingStep1Form } from "./types/DriverOnBoardingStep1Account.type";
 import {
   DRIVER_STEP2_KEY,
   type IDriverOnBoardingStep2Form,
@@ -25,14 +22,19 @@ import {
   DRIVER_STEP5_KEY,
   type IDriverOnBoardingStep5Form,
 } from "./types/DriverOnBoardingStep5Payout.type";
+import { STEP1_KEY } from "./types/OnBoardingStep1Account.type";
 import {
-  AccountTypeOptions,
-  TaxClassificationOptions,
-} from "./types/constant.enums.type";
+  commonAccountOnBoardStep1DefaultValues,
+  driverOnBoardStep2DefaultValues,
+  driverOnBoardStep3DefaultValues,
+  driverOnBoardStep4DefaultValues,
+  driverOnBoardStep5DefaultValues,
+} from "../constants/DefaultValues";
+import { UserRole } from "../constants/UserRoleEnum";
 
 interface ICreateDriver {
   userInfo: {
-    profileImgUrl?: string;
+    profileImgUrl: string | null;
     name: string;
     phoneNumber: string;
     email: string;
@@ -49,7 +51,7 @@ interface ICreateDriver {
   documents: {
     license: string;
     insurance: string;
-    additionalNotes?: string;
+    additionalNotes: string | null;
   };
 }
 
@@ -68,42 +70,30 @@ export default function DriverOnboardingReview() {
   const navigate = useNavigate();
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const step1 = loadDraft<IDriverOnBoardingStep1Form>(DRIVER_STEP1_KEY, {
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    profileImgUrl: "",
-  });
+  const step1 = loadDraft<IDriverOnBoardingStep1Form>(
+    STEP1_KEY,
+    commonAccountOnBoardStep1DefaultValues
+  );
 
-  const step2 = loadDraft<IDriverOnBoardingStep2Form>(DRIVER_STEP2_KEY, {
-    vehicleType: "",
-    model: "",
-    year: "",
-    color: "",
-    licensePlate: "",
-  });
+  const step2 = loadDraft<IDriverOnBoardingStep2Form>(
+    DRIVER_STEP2_KEY,
+    driverOnBoardStep2DefaultValues
+  );
 
-  const step3 = loadDraft<IDriverOnBoardingStep3Form>(DRIVER_STEP3_KEY, {
-    licenseImgUrl: "",
-    insuranceImgUrl: "",
-    additionalNotes: "",
-  });
+  const step3 = loadDraft<IDriverOnBoardingStep3Form>(
+    DRIVER_STEP3_KEY,
+    driverOnBoardStep3DefaultValues
+  );
 
-  const step4 = loadDraft<IDriverOnBoardingStep4Form>(DRIVER_STEP4_KEY, {
-    legalFullName: "",
-    last4SSN: "",
-  });
+  const step4 = loadDraft<IDriverOnBoardingStep4Form>(
+    DRIVER_STEP4_KEY,
+    driverOnBoardStep4DefaultValues
+  );
 
-  const step5 = loadDraft<IDriverOnBoardingStep5Form>(DRIVER_STEP5_KEY, {
-    fullName: "",
-    routingNumber: "",
-    accountNumber: "",
-    accountType: AccountTypeOptions.Checking,
-    taxClassification: TaxClassificationOptions.Individual,
-  });
+  const step5 = loadDraft<IDriverOnBoardingStep5Form>(
+    DRIVER_STEP5_KEY,
+    driverOnBoardStep5DefaultValues
+  );
 
   const onBack = () => navigate("/driver-on-board-step-5");
 
@@ -112,7 +102,7 @@ export default function DriverOnboardingReview() {
       await createDriver({
         ...data,
       });
-      clearDraft(DRIVER_STEP1_KEY);
+      clearDraft(STEP1_KEY);
       clearDraft(DRIVER_STEP2_KEY);
       clearDraft(DRIVER_STEP3_KEY);
       clearDraft(DRIVER_STEP4_KEY);
@@ -127,12 +117,12 @@ export default function DriverOnboardingReview() {
   const onContinue = () => {
     handleCreateDriverSubmit({
       userInfo: {
-        profileImgUrl: step1.profileImgUrl,
+        profileImgUrl: step1.profileImgUrl === "" ? null : step1.profileImgUrl,
         name: `${step1.firstName} ${step1.lastName}`,
         phoneNumber: step1.phoneNumber,
         email: step1.email,
         password: step1.password,
-        role: "driver",
+        role: UserRole.Driver,
       },
       vehicleInfo: {
         vehicleType: step2.vehicleType,
@@ -144,7 +134,8 @@ export default function DriverOnboardingReview() {
       documents: {
         license: step3.licenseImgUrl,
         insurance: step3.insuranceImgUrl,
-        additionalNotes: step3.additionalNotes,
+        additionalNotes:
+          step3.additionalNotes === "" ? null : step3.additionalNotes,
       },
     });
   };

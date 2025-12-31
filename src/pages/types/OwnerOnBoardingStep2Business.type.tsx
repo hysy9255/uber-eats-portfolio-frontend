@@ -1,4 +1,5 @@
 export interface IOwnerOnBoardingStep2Form {
+  logoImgUrl: string;
   lbn: string;
   dba: string;
   cuisineType: string;
@@ -9,6 +10,7 @@ export interface IOwnerOnBoardingStep2Form {
   mainImgUrl: string;
   sub1ImgUrl: string;
   sub2ImgUrl: string;
+  bannerImgUrl: string;
 }
 
 export const OWNER_STEP2_KEY = "onboard.owner.step2";

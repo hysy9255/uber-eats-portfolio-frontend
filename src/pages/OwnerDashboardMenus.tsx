@@ -8,7 +8,7 @@ import { getRestaurantId, getToken } from "../auth";
 import EditMenuSidebar, {
   type EditDishFormData,
 } from "../components/EditMenuSidebar";
-import { createDish, deleteDish, editDish, getDishes } from "../api/dishApi";
+import { createDish, deleteDish, updateDish, getDishes } from "../api/dishApi";
 
 const OwnerDashboardMenus = () => {
   const [menuList, setMenuList] = useState<MenuList[]>([]);
@@ -44,10 +44,10 @@ const OwnerDashboardMenus = () => {
     }
   };
 
-  const handleEditDish = async (data: EditDishFormData) => {
+  const handleUpdateDish = async (data: EditDishFormData) => {
     if (!menuToEdit?.dishId) return;
     try {
-      await editDish(menuToEdit?.dishId, token, data);
+      await updateDish(menuToEdit?.dishId, token, data);
       await loadMenus();
     } catch (error) {
       console.error(error);
@@ -80,15 +80,22 @@ const OwnerDashboardMenus = () => {
   };
 
   return (
-    <>
-      <button
-        className="rounded-sm border border-gray-300 text-md text-gray-700 font-medium px-2 py-1 bg-gray-100 hover:bg-gray-200 active:bg-gray-300"
-        onClick={() => setAddMenuSidebarOpen(true)}
-      >
-        + Add Menu
-      </button>
+    <div className="p-[10px] flex flex-col gap-3">
+      <h3 className="flex justify-between items-center">
+        <div className="text-lg font-semibold flex gap-2">
+          <div>Menus </div>
+          <div className="text-slate-600">(34)</div>
+        </div>
+        <button
+          className="rounded-sm border border-gray-300 text-sm text-gray-700 font-medium px-2 py-1 bg-gray-100 hover:bg-gray-200 active:bg-gray-300"
+          onClick={() => setAddMenuSidebarOpen(true)}
+        >
+          + Add Menu
+        </button>
+      </h3>
+
       <article className="border border-gray-300 rounded-md">
-        <h3 className="bg-gray-100 rounded-t-md border-b border-gray-300 text-lg font-medium">
+        <h3 className="bg-gray-100 rounded-t-md border-b border-gray-300 text-sm font-medium">
           <div className="py-1 px-3 grid grid-cols-[1fr_100px_100px_100px] gap-3">
             <div className="">Name</div>
             <div className="">Price</div>
@@ -156,12 +163,13 @@ const OwnerDashboardMenus = () => {
       )}
       {editMenuSidebarOpen && (
         <EditMenuSidebar
-          closeSideBar={() => setEditMenuSidebarOpen(false)}
+          // closeSideBar={() => setEditMenuSidebarOpen(false)}
+          onClose={() => setEditMenuSidebarOpen(false)}
           menuToEdit={menuToEdit}
-          handleEditDish={handleEditDish}
+          handleUpdateDish={handleUpdateDish}
         />
       )}
-    </>
+    </div>
   );
 };
 

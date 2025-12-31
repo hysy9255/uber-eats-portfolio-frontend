@@ -1,4 +1,4 @@
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 import { useNavigate } from "react-router-dom";
 import { CREATE_DRIVER_PAGE_STEPS } from "../constants/CreateDriverPageSteps";
 import { useForm } from "react-hook-form";

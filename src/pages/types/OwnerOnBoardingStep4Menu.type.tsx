@@ -1,7 +1,9 @@
+import type { CategoryOptions } from "../../constants/CategoryOptions";
+
 export type DraftItem = {
   name: string;
   price: string;
-  category: string;
+  category: CategoryOptions;
   description: string;
   imagePreview: string;
   // imageFile: File | null;

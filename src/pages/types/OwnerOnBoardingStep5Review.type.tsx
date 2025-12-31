@@ -2,7 +2,7 @@ import type { Day, DayHours } from "./OwnerOnBoardingStep3Location.type";
 
 export interface ICreateOwner {
   userInfo: {
-    profileImgUrl?: string;
+    profileImgUrl: string | null;
     name: string;
     phoneNumber: string;
     email: string;
@@ -10,6 +10,7 @@ export interface ICreateOwner {
     role: string;
   };
   business: {
+    logo: string | null;
     lbn: string;
     dba: string;
     cuisineType: string;
@@ -20,6 +21,7 @@ export interface ICreateOwner {
     mainImgUrl: string;
     sub1ImgUrl: string;
     sub2ImgUrl: string;
+    bannerImgUrl: string;
   };
   locationAndHours: {
     streetAddress: string;
@@ -35,7 +37,7 @@ export interface ICreateOwner {
   };
   menus: {
     items: Array<{
-      dishImgUrl?: string;
+      dishImgUrl?: string | null;
       name: string;
       category: string;
       price: string;

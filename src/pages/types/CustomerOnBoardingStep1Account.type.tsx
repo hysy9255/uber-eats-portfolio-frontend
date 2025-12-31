@@ -1,15 +1,3 @@
-export interface ICustomerOnBoardingStep1Form {
-  firstName: string;
-  lastName: string;
-  phoneNumber: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
-  profileImgUrl?: string;
-}
-
-export const CUSTOMER_STEP1_KEY = "onboard.customer.step1";
-
 export const CustomerStep1RightPanel = (
   <div>
     <p className="text-sm text-slate-700 font-medium">What you’ll need</p>

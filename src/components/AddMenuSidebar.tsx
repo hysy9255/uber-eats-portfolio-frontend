@@ -1,9 +1,11 @@
 import { useForm } from "react-hook-form";
-import ImageUploadZone from "./ImageUploadZone";
+import ImageUploadZone from "./UploadZones/ImageUploadZone";
 import { useEffect, useState } from "react";
 import { uploadImage } from "../utils/uploadImg";
-import Dropdown from "./Dropdown";
+import Dropdown from "./Dropdowns/Dropdown";
 import SuccessDialog from "./SuccessPopup";
+import { DishCategory } from "../constants/DishCategoryEnums";
+import { customInputCss } from "../constants/CustomInputCss";
 
 export type CreateDishFormData = {
   dishImgUrl: string;
@@ -28,14 +30,14 @@ const AddMenuSidebar: React.FC<AddMenuSidebarProps> = ({
 }) => {
   const [newPreview, setNewPreview] = useState("");
   const [showSuccess, setShowSuccess] = useState(false);
-  const [categoryOption, setCategoryOption] = useState<string>("Apetizers");
+  const [categoryOption, setCategoryOption] = useState<string>("Appetizers");
   const { register, handleSubmit, setValue, reset } =
     useForm<CreateDishFormData>({
       mode: "onSubmit",
       defaultValues: {
         dishImgUrl: "",
         name: "",
-        category: "Apetizers",
+        category: "Appetizers",
         price: "",
         description: "",
       },
@@ -71,7 +73,7 @@ const AddMenuSidebar: React.FC<AddMenuSidebarProps> = ({
           <article className="md:col-span-2">
             <div className="text-sm font-medium mb-1">Photo</div>
             <ImageUploadZone
-              sizeClass="w-full"
+              className="w-full"
               previewSrc={newPreview || undefined}
               onSelected={onSelectImageUpload}
             />
@@ -81,12 +83,12 @@ const AddMenuSidebar: React.FC<AddMenuSidebarProps> = ({
           </article>
 
           {/* Right: inputs */}
-          <article className="md:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <article className="md:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-2">
             <label className="md:col-span-4">
               <span className="text-sm font-medium">Item name</span>
               <input
                 {...register("name")}
-                className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+                className={customInputCss}
                 placeholder="Kung Pao Chicken"
               />
             </label>
@@ -94,9 +96,15 @@ const AddMenuSidebar: React.FC<AddMenuSidebarProps> = ({
             <label className="md:col-span-2">
               <span className="text-sm font-medium">Category</span>
               <Dropdown
-                options={["Appetizers", "Mains", "Noodles", "Desserts"]}
+                options={[
+                  DishCategory.Appetizers,
+                  DishCategory.Mains,
+                  DishCategory.Desserts,
+                  DishCategory.Drinks,
+                ]}
                 option={categoryOption}
                 setOption={setCategoryOption}
+                widthCss="w-full"
               />
             </label>
 
@@ -108,7 +116,7 @@ const AddMenuSidebar: React.FC<AddMenuSidebarProps> = ({
                 inputMode="decimal"
                 step="0.01"
                 min="0.01"
-                className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+                className={customInputCss}
                 placeholder="12.00"
               />
             </label>
@@ -118,7 +126,7 @@ const AddMenuSidebar: React.FC<AddMenuSidebarProps> = ({
               <textarea
                 {...register("description")}
                 rows={3}
-                className="mt-1 w-full rounded-xl ring-1 ring-slate-300 px-3 py-2 outline-none"
+                className={customInputCss}
                 placeholder="Spicy stir-fry with peanuts, chili and scallions."
               />
             </label>

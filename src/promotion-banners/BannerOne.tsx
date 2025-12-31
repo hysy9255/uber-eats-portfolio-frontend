@@ -40,7 +40,7 @@ const BannerOne = () => {
 
           {/* Copy block */}
           <div
-            className={`z-50 absolute ${horizontalPosition} bottom-15 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]`}
+            className={`z-40 absolute ${horizontalPosition} bottom-15 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]`}
           >
             <p className={`${copyTextSize.eyebrow} opacity-90`}>
               {copy.eyebrow}
@@ -79,7 +79,7 @@ const BannerOne = () => {
 
           {/* Copy block */}
           <div
-            className={`absolute inset-3 flex flex-col gap-3 border-white items-center justify-center z-50 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]`}
+            className={`absolute inset-3 flex flex-col gap-3 border-white items-center justify-center z-40 text-white drop-shadow-[0_2px_12px_rgba(0,0,0,0.8)]`}
           >
             <p className={`${copyTextSize.eyebrow} opacity-90`}>
               {copy.eyebrow}

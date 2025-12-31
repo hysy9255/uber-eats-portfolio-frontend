@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from "react";
-
-// import coverImg from "../images/restaurants/Al_Prato.webp";
-import DishCard from "../components/DishCard";
+import { useEffect, useState } from "react";
 import SideBar from "../components/SideBar";
-import OwnerMainHeader from "../components/MainHeader/OwnerMainHeader";
-import { useAuth } from "../AuthContext";
+import OwnerMainHeader from "../components/Headers/OwnerMainHeader";
+import { useAuth } from "../ReactContext/auth/UseAuth";
 
 export type Restaurant = {
   restaurantId: string;

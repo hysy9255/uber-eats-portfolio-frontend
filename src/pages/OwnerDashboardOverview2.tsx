@@ -1,46 +1,42 @@
-import DropdownButton, {
-  type DropdownOptionsType,
-} from "../components/DropdownButton";
-import KpiButton from "../components/KpiButton";
-import sampleGraph from "../images/sample-graph.png";
-
-const kpiStats = [
-  { value: "58", label: "Orders" },
-  { value: "$1,240", label: "Revenue" },
-  { value: "$21.45", label: "Avg. order" },
-  { value: "+4", label: "New reviews" },
-];
-
-const dropdownOptions: DropdownOptionsType[] = [
-  { label: "Today" },
-  { label: "Yesterday" },
-  { label: "Last 7 days", isDefault: true },
-  { label: "Last 14 days" },
-  { label: "Last 30 days" },
-];
+import { useOutletContext } from "react-router-dom";
+import BusinessInsight from "../components/BusinessInsight";
+import EmbedMapIframe from "../components/EmbedMapIframe";
+import MenuRankings from "../components/MenuRankings";
+import OperatingHoursForDashboard from "../components/OperatingHoursForDashboard";
+import OrdersComponentForDashboard from "../components/OrdersComponentForDashboard";
+import { mockOrderData } from "../constants/MockOrdersData";
+import type { OwnerDashboardContext } from "../components/Shells/OwnerDashboardShell";
 
 const OwnerDashboardOverview2 = () => {
+  const { restaurant } = useOutletContext<OwnerDashboardContext>();
+
+  if (!restaurant) return null;
   return (
-    <>
-      <DropdownButton options={dropdownOptions} width="w-[150px]" />
-      <article className="grid grid-cols-4 gap-4">
-        {kpiStats.map((stat) => (
-          <KpiButton
-            value={stat.value}
-            label={stat.label}
-            valueSize="text-xl"
-            labelSize="text-md"
-          />
-        ))}
+    <main className="flex-1 justify-center p-[10px] grid grid-cols-[2fr_1fr] gap-3">
+      <article className="flex justify-between items-center relative border border-gray-300 rounded-md p-3 col-span-2">
+        <div className="flex items-end gap-1">
+          <h1 className="text-lg font-semibold leading-none">
+            {restaurant?.dba}
+          </h1>
+          <p className="text-sm leading-none">
+            {restaurant?.unit}, {restaurant?.streetAddress}, {restaurant?.city},{" "}
+            {restaurant?.zip}{" "}
+          </p>
+        </div>
       </article>
-      <article
-        id="graph"
-        className="bg-white rounded-md border border-gray-300"
-      >
-        <h2 className="text-xl font-medium pl-5 pt-5">Sales past 7 days</h2>
-        <img className="w-full h-[345px] rounded-md" src={sampleGraph} />
-      </article>
-    </>
+
+      <section id="left-half" className=" space-y-3">
+        <BusinessInsight />
+        <MenuRankings />
+      </section>
+      <section id="right-half" className="space-y-3">
+        <OrdersComponentForDashboard orders={mockOrderData} />
+        <OperatingHoursForDashboard
+          operatingHours={restaurant?.operatingHours}
+        />
+        <EmbedMapIframe />
+      </section>
+    </main>
   );
 };
 

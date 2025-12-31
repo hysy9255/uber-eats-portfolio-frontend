@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 import { CREATE_DRIVER_PAGE_STEPS } from "../constants/CreateDriverPageSteps";
-import ImageUploadZone from "../components/ImageUploadZone";
+import ImageUploadZone from "../components/UploadZones/ImageUploadZone";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { uploadImage } from "../utils/uploadImg";
@@ -88,7 +88,7 @@ export default function DriverOnboardingDocs() {
               })}
             />
             <ImageUploadZone
-              sizeClass="h-60 w-full"
+              className="h-60 w-full"
               onSelected={onLicenseImageSelected}
               previewSrc={licensePreview}
             />
@@ -107,7 +107,7 @@ export default function DriverOnboardingDocs() {
               })}
             />
             <ImageUploadZone
-              sizeClass="h-60 w-full"
+              className="h-60 w-full"
               onSelected={onInsuranceImageSelected}
               previewSrc={insurancePreview}
             />

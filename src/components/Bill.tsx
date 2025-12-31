@@ -1,33 +1,38 @@
+import { Link } from "react-router-dom";
+import { useCart } from "../ReactContext/cart/UseCart";
+
 const Bill = () => {
+  const { cart, calculatTotalCost } = useCart();
   return (
-    <div className=" w-full p-3 rounded-lg flex flex-col gap-y-3 sticky top-30 bg-white border border-gray-100 shadow-md">
-      <div className="text-2xl font-bold ">Your cart</div>
-      <div className="">3 items</div>
-      <div className="">
-        <div className="flex gap-3 justify-between">
-          <div>Boat Noodles</div>
-          <div>11.80</div>
-        </div>
-        <div className="flex gap-3 justify-between">
-          <div>Pad Thaid</div>
-          <div>16.80</div>
-        </div>
-        <div className="flex gap-3 justify-between">
-          <div>Boat Noodles</div>
-          <div>11.80</div>
-        </div>
+    <div className=" w-full p-3 rounded-lg flex flex-col gap-y-3 sticky top-30 bg-white border border-gray-300 shadow-md">
+      <div className="text-xl font-bold ">Your cart</div>
+      <div className="">{cart.cartItems.length} items</div>
+      <div className="space-y-2">
+        {cart.cartItems.map((item) => (
+          <div className="flex justify-between gap-x-4">
+            <Link
+              to={`/restaurants/${cart.restaurantId}/dishes/${item.dishId}`}
+            >
+              <div className="leading-none hover:cursor-pointer hover:underline">
+                {item.name} ({item.quantity})
+              </div>
+            </Link>
+
+            <div className="leading-none">${item.price}</div>
+          </div>
+        ))}
       </div>
 
       <div className="flex gap-3 justify-between">
         <div>Subtotal</div>
-        <div>$40.43</div>
+        <div>${calculatTotalCost()}</div>
       </div>
 
-      <div className="">
+      <Link to={"/cart"}>
         <div className="bg-black text-gray-200 py-3 rounded-md flex items-center justify-center">
-          Checkout
+          View Cart
         </div>
-      </div>
+      </Link>
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 import { useNavigate } from "react-router-dom";
 import { clearDraft, loadDraft } from "../utils/localDraft";
 import { CREATE_OWNER_PAGE_STEPS } from "../constants/CreateOwnerPageSteps";
@@ -6,97 +6,63 @@ import { formatAddress } from "../utils/formatAddress";
 import { formatHoursShort } from "../utils/formatHoursShort";
 import { useState } from "react";
 import SuccessDialog from "../components/SuccessPopup";
-import {
-  OWNER_STEP1_KEY,
-  type IOwnerOnBoardingStep1Form,
-} from "./types/OwnerOnBoardingStep1Account.type";
+import { type IOwnerOnBoardingStep1Form } from "./types/OwnerOnBoardingStep1Account.type";
 import type { ICreateOwner } from "./types/OwnerOnBoardingStep5Review.type";
 import {
   OWNER_STEP2_KEY,
   type IOwnerOnBoardingStep2Form,
 } from "./types/OwnerOnBoardingStep2Business.type";
 import {
-  DAYS,
   OWNER_STEP3_KEY,
-  type Day,
-  type DayHours,
   type IOwnerOnBoardingStep3Form,
 } from "./types/OwnerOnBoardingStep3Location.type";
 import {
   OWNER_STEP4_KEY,
   type IOwnerOnBoardingStep4Form,
 } from "./types/OwnerOnBoardingStep4Menu.type";
-
-const createOwner = async (payload: ICreateOwner) => {
-  const res = await fetch(`http://localhost:3002/users/owners`, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(await res.text());
-};
+import {
+  commonAccountOnBoardStep1DefaultValues,
+  ownerOnboardStep2DefaultValues,
+  ownerOnboardStep3DefaultValues,
+  ownerOnboardStep4DefaultValues,
+} from "../constants/DefaultValues";
+import { STEP1_KEY } from "./types/OnBoardingStep1Account.type";
+import { UserRole } from "../constants/UserRoleEnum";
+import { createOwner } from "../api/userApi";
 
 export default function OwnerOnboardingReview() {
   const navigate = useNavigate();
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const step1 = loadDraft<IOwnerOnBoardingStep1Form>(OWNER_STEP1_KEY, {
-    firstName: "",
-    lastName: "",
-    phoneNumber: "",
-    email: "",
-    password: "",
-    confirmPassword: "",
-    profileImgUrl: "",
-  });
+  const step1 = loadDraft<IOwnerOnBoardingStep1Form>(
+    STEP1_KEY,
+    commonAccountOnBoardStep1DefaultValues
+  );
 
-  const step2 = loadDraft<IOwnerOnBoardingStep2Form>(OWNER_STEP2_KEY, {
-    lbn: "",
-    dba: "",
-    cuisineType: "",
-    storePhone: "",
-    businessEmail: "",
-    website: "",
-    instagram: "",
-    mainImgUrl: "",
-    sub1ImgUrl: "",
-    sub2ImgUrl: "",
-  });
+  const step2 = loadDraft<IOwnerOnBoardingStep2Form>(
+    OWNER_STEP2_KEY,
+    ownerOnboardStep2DefaultValues
+  );
 
-  const step3 = loadDraft<IOwnerOnBoardingStep3Form>(OWNER_STEP3_KEY, {
-    streetAddress: "",
-    unit: "",
-    city: "",
-    state: "",
-    zip: "",
-    hours: Object.fromEntries(
-      DAYS.map((d) => [
-        d,
-        { open: "", close: "", open24: false, closed: false },
-      ])
-    ) as Record<Day, DayHours>,
-    deliveryRadius: "5",
-    prepTime: "10-15 min",
-    orderType: "Delivery & Pickup",
-  });
+  const step3 = loadDraft<IOwnerOnBoardingStep3Form>(
+    OWNER_STEP3_KEY,
+    ownerOnboardStep3DefaultValues
+  );
 
   const addressLine = formatAddress(step3);
   const hoursLine = formatHoursShort(step3.hours);
 
-  const step4 = loadDraft<IOwnerOnBoardingStep4Form>(OWNER_STEP4_KEY, {
-    items: [],
-  });
+  const step4 = loadDraft<IOwnerOnBoardingStep4Form>(
+    OWNER_STEP4_KEY,
+    ownerOnboardStep4DefaultValues
+  );
 
   const onBack = () => navigate("/owner-on-board-step-4");
 
   const handleCreateOwnerSubmit = async (data: ICreateOwner) => {
     try {
-      await createOwner({
-        ...data,
-      });
-      clearDraft(OWNER_STEP1_KEY);
+      await createOwner(data);
+      clearDraft(STEP1_KEY);
       clearDraft(OWNER_STEP2_KEY);
       clearDraft(OWNER_STEP3_KEY);
       clearDraft(OWNER_STEP4_KEY);
@@ -110,14 +76,15 @@ export default function OwnerOnboardingReview() {
   const onContinue = () => {
     handleCreateOwnerSubmit({
       userInfo: {
-        profileImgUrl: step1.profileImgUrl,
+        profileImgUrl: step1.profileImgUrl === "" ? null : step1.profileImgUrl,
         name: `${step1.firstName} ${step1.lastName}`,
         phoneNumber: step1.phoneNumber,
         email: step1.email,
         password: step1.password,
-        role: "owner",
+        role: UserRole.Owner,
       },
       business: {
+        logo: step2.logoImgUrl === "" ? null : step2.logoImgUrl,
         lbn: step2.lbn,
         dba: step2.dba,
         cuisineType: step2.cuisineType,
@@ -128,6 +95,7 @@ export default function OwnerOnboardingReview() {
         mainImgUrl: step2.mainImgUrl,
         sub1ImgUrl: step2.sub1ImgUrl,
         sub2ImgUrl: step2.sub2ImgUrl,
+        bannerImgUrl: step2.bannerImgUrl,
       },
       locationAndHours: {
         streetAddress: step3.streetAddress,
@@ -142,7 +110,7 @@ export default function OwnerOnboardingReview() {
       },
       menus: {
         items: step4.items.map((it) => ({
-          dishImgUrl: it.imagePreview,
+          dishImgUrl: it.imagePreview === "" ? null : it.imagePreview,
           name: it.name,
           category: it.category,
           price: it.price,
@@ -183,7 +151,7 @@ export default function OwnerOnboardingReview() {
             <button
               type="button"
               onClick={() => navigate("/owner-on-board-step-1")}
-              className="text-sm font-medium text-emerald-700 hover:underline"
+              className="text-sm font-medium text-emerald-700 hover:underline hover:cursor-pointer"
             >
               Edit
             </button>
@@ -213,7 +181,7 @@ export default function OwnerOnboardingReview() {
             <button
               type="button"
               onClick={() => navigate("/owner-on-board-step-2")}
-              className="text-sm font-medium text-emerald-700 hover:underline"
+              className="text-sm font-medium text-emerald-700 hover:underline hover:cursor-pointer"
             >
               Edit
             </button>
@@ -245,7 +213,7 @@ export default function OwnerOnboardingReview() {
             <button
               type="button"
               onClick={() => navigate("/owner-on-board-step-3")}
-              className="text-sm font-medium text-emerald-700 hover:underline"
+              className="text-sm font-medium text-emerald-700 hover:underline hover:cursor-pointer"
             >
               Edit
             </button>
@@ -267,7 +235,7 @@ export default function OwnerOnboardingReview() {
             <button
               type="button"
               onClick={() => navigate("/owner-on-board-step-4")}
-              className="text-sm font-medium text-emerald-700 hover:underline"
+              className="text-sm font-medium text-emerald-700 hover:underline hover:cursor-pointer"
             >
               Edit
             </button>

@@ -1,6 +1,4 @@
-import React from "react";
 import { Link } from "react-router-dom";
-import MainHeader from "../components/MainHeader/ClientMainHeader";
 
 const PageNotFound = () => {
   return (
@@ -8,15 +6,8 @@ const PageNotFound = () => {
       id="outer"
       className="h-screen flex flex-col p-[clamp(5px,min(2vh,2vw),20px)]"
     >
-      <div id="main-header" className="h-fit pb-[clamp(5px,min(2vh,2vw),20px)]">
-        <MainHeader />
-      </div>
       <div className="flex-1 bg-white flex items-center justify-center text-black text-center">
         <div>
-          {/* <div className="flex justify-center mb-11">
-        <img src={uberEatsLogo} alt="Logo" className="h-12" />
-      </div> */}
-
           {/* Page Not Found Text */}
           <h1 className="text-4xl font-bold">Page not found</h1>
           <p className="text-gray-400 mt-2">

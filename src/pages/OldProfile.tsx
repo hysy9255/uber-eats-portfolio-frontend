@@ -5,7 +5,8 @@ import uberEatsLogo from "../logos/logo.svg";
 import { useForm } from "react-hook-form";
 import { getToken } from "../auth";
 import pencil from "../icons/pencil.png";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../ReactContext/auth/UseAuth";
+
 // import { useIdentifyUserQuery } from "../../API/graphqls/authGraphQl";
 
 interface IUpdatePassword {

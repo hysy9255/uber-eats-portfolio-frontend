@@ -4,7 +4,6 @@ export interface ICustomerOnBoardingStep2Form {
   city: string;
   state: string;
   zip: string;
-  deliveryNotes: string;
 }
 
 export const CUSTOMER_STEP2_KEY = "onboard.customer.step2";

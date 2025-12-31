@@ -1,5 +1,5 @@
-import WizardShell from "../components/WizardShell";
-import ImageUploadZone from "../components/ImageUploadZone";
+import WizardShell from "../components/Shells/WizardShell";
+import ImageUploadZone from "../components/UploadZones/ImageUploadZone";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { clearDraft, loadDraft, saveDraft } from "../utils/localDraft";
@@ -12,36 +12,36 @@ import {
   type IOwnerOnBoardingStep2Form,
 } from "./types/OwnerOnBoardingStep2Business.type";
 import { OWNER_STEP3_KEY } from "./types/OwnerOnBoardingStep3Location.type";
+import { customInputCss } from "../constants/CustomInputCss";
+import { ownerOnboardStep2DefaultValues } from "../constants/DefaultValues";
+import ProfileOrLogoUploadZone from "../components/UploadZones/ProfileOrLogoUploadZone";
+import DefaultRestaurantLogoImg from "../components/Images/DefaultRestaurantLogoImg/DefaultRestaurantLogoImg";
+// import defaultRestaurantLogoImg from "../images/defaultRestaurantLogo.jpg";
 
 export default function OwnerOnboardingBusiness() {
   const navigate = useNavigate();
 
-  const defaultValues = loadDraft<IOwnerOnBoardingStep2Form>(OWNER_STEP2_KEY, {
-    lbn: "",
-    dba: "",
-    cuisineType: "",
-    storePhone: "",
-    businessEmail: "",
-    website: "",
-    instagram: "",
-    mainImgUrl: "",
-    sub1ImgUrl: "",
-    sub2ImgUrl: "",
-  });
+  const defaultValues = loadDraft<IOwnerOnBoardingStep2Form>(
+    OWNER_STEP2_KEY,
+    ownerOnboardStep2DefaultValues
+  );
 
   const [mainImgUrl, setMainImgUrl] = useState(defaultValues.mainImgUrl);
   const [sub1ImgUrl, setSub1ImgUrl] = useState(defaultValues.sub1ImgUrl);
   const [sub2ImgUrl, setSub2ImgUrl] = useState(defaultValues.sub2ImgUrl);
+  const [bannerImgUrl, setBannerImgUrl] = useState(defaultValues.bannerImgUrl);
+
+  const methods = useForm<IOwnerOnBoardingStep2Form>({
+    mode: "onSubmit",
+    defaultValues,
+  });
 
   const {
     register,
     handleSubmit,
     formState: { errors },
     setValue,
-  } = useForm<IOwnerOnBoardingStep2Form>({
-    mode: "onChange",
-    defaultValues,
-  });
+  } = methods;
 
   const onContinue = (data: IOwnerOnBoardingStep2Form) => {
     saveDraft(OWNER_STEP2_KEY, data);
@@ -79,6 +79,42 @@ export default function OwnerOnboardingBusiness() {
     setValue("sub2ImgUrl", persistentUrl);
   };
 
+  const onSelectBennerImageUpload = async (file: File) => {
+    const url = URL.createObjectURL(file);
+    setBannerImgUrl(url);
+    const persistentUrl = await uploadImage(file);
+    setValue("bannerImgUrl", persistentUrl);
+  };
+
+  const [profileImgPreview, setProfileImgPreview] = useState<
+    string | undefined
+  >(defaultValues.logoImgUrl);
+
+  const onClickRemove = () => {
+    setProfileImgPreview("");
+    methods.setValue("logoImgUrl", "", { shouldDirty: true });
+    saveDraft(OWNER_STEP2_KEY, { ...methods.getValues() });
+  };
+
+  const onClickUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      alert("Please upload an image file.");
+      e.target.value = "";
+      return;
+    }
+
+    const url = URL.createObjectURL(file);
+    setProfileImgPreview(url);
+    const persistentUrl = await uploadImage(file);
+
+    methods.setValue("logoImgUrl", persistentUrl, {
+      shouldDirty: true,
+    });
+  };
+
   return (
     <WizardShell
       onExitWithoutSaving={onExitWithoutSaving}
@@ -93,17 +129,27 @@ export default function OwnerOnboardingBusiness() {
       <form className="space-y-6">
         {/* Names */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="col-span-2">
+            <ProfileOrLogoUploadZone
+              onClickRemove={onClickRemove}
+              onClickUpload={onClickUpload}
+              title="Logo Image (optional)"
+              defaultImgBackground={<DefaultRestaurantLogoImg />}
+              profileImgPreview={profileImgPreview}
+            />
+          </div>
+
           <label>
             <span className="text-sm font-medium">Legal business name</span>
             <input
               {...register("lbn", {
                 required: "Legal business name is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="Tuxedo Dining LLC"
             />
             {errors.lbn?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.lbn?.message}
               </span>
             )}
@@ -114,11 +160,11 @@ export default function OwnerOnboardingBusiness() {
               {...register("dba", {
                 required: "DBA (doing buisiness as) is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="Chinese Tuxedo"
             />
             {errors.dba?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.dba?.message}
               </span>
             )}
@@ -133,11 +179,11 @@ export default function OwnerOnboardingBusiness() {
               {...register("cuisineType", {
                 required: "Cuisine type is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="Chinese, Dim Sum, Noodles"
             />
             {errors.cuisineType?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.cuisineType?.message}
               </span>
             )}
@@ -152,11 +198,11 @@ export default function OwnerOnboardingBusiness() {
               {...register("storePhone", {
                 required: "Store phone is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="+1 212 555 0199"
             />
             {errors.storePhone?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.storePhone?.message}
               </span>
             )}
@@ -168,11 +214,11 @@ export default function OwnerOnboardingBusiness() {
                 required: "Business email is required",
               })}
               type="email"
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="contact@chinesetuxedo.com"
             />
             {errors.businessEmail?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.businessEmail?.message}
               </span>
             )}
@@ -186,11 +232,11 @@ export default function OwnerOnboardingBusiness() {
             <input
               {...register("website", {})}
               type="url"
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="https://example.com"
             />
             {errors.website?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.website?.message}
               </span>
             )}
@@ -200,11 +246,11 @@ export default function OwnerOnboardingBusiness() {
             <input
               {...register("instagram", {})}
               type="url"
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="https://instagram.com/yourhandle"
             />
             {errors.instagram?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.instagram?.message}
               </span>
             )}
@@ -223,18 +269,11 @@ export default function OwnerOnboardingBusiness() {
             />
             <ImageUploadZone
               previewSrc={mainImgUrl} // ★ RHF 값 표시
-              sizeClass="h-64 w-full"
+              className="aspect-square"
               onSelected={onSelectMainImageUpload}
-              // onSelected={async (file) => {
-              //   const url = await uploadImage(file);
-              //   setValue(MAIN_IMG_URL, url, {
-              //     shouldDirty: true,
-              //     shouldValidate: true,
-              //   });
-              // }
             />
             {errors.mainImgUrl?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.mainImgUrl?.message}
               </span>
             )}
@@ -249,19 +288,12 @@ export default function OwnerOnboardingBusiness() {
             />
             <ImageUploadZone
               previewSrc={sub1ImgUrl} // ★ RHF 값 표시
-              sizeClass="h-64 w-full"
+              className="aspect-square"
               label={"Recommended 1600×900"}
               onSelected={onSelectSub1ImageUpload}
-              // onSelected={async (file) => {
-              //   const url = await uploadImage(file);
-              //   setValue(SUB1_IMG_URL, url, {
-              //     shouldDirty: true,
-              //     shouldValidate: true,
-              //   });
-              // }}
             />
             {errors.sub1ImgUrl?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.sub1ImgUrl?.message}
               </span>
             )}
@@ -276,20 +308,33 @@ export default function OwnerOnboardingBusiness() {
             />
             <ImageUploadZone
               previewSrc={sub2ImgUrl} // ★ RHF 값 표시
-              sizeClass="h-64 w-full"
+              className="aspect-square"
               label={"Recommended 1600×900"}
               onSelected={onSelectSub2ImageUpload}
-              // onSelected={async (file) => {
-              //   const url = await uploadImage(file);
-              //   setValue(SUB2_IMG_URL, url, {
-              //     shouldDirty: true,
-              //     shouldValidate: true,
-              //   });
-              // }}
             />
             {errors.sub2ImgUrl?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.sub2ImgUrl?.message}
+              </span>
+            )}
+          </div>
+          <div className="col-span-3">
+            <div className="text-sm font-medium">Banner Image</div>
+            <input
+              type="hidden"
+              {...register("bannerImgUrl", {
+                required: "Banner image is required",
+              })}
+            />
+            <ImageUploadZone
+              previewSrc={bannerImgUrl} // ★ RHF 값 표시
+              className="aspect-[5/1]"
+              label={"Recommended 1600×900"}
+              onSelected={onSelectBennerImageUpload}
+            />
+            {errors.bannerImgUrl?.message && (
+              <span className="font-medium text-red-500 text-sm">
+                {errors.bannerImgUrl?.message}
               </span>
             )}
           </div>

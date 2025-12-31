@@ -1,7 +1,7 @@
 export interface IDriverOnBoardingStep3Form {
   licenseImgUrl: string;
   insuranceImgUrl: string;
-  additionalNotes?: string;
+  additionalNotes: string | null;
 }
 
 export const DRIVER_STEP3_KEY = "onboard.driver.step3";

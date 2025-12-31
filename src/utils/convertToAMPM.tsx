@@ -10,7 +10,7 @@ export function convertToAMPM(time?: string | null) {
 
   if (Number.isNaN(hour) || Number.isNaN(minute)) return "";
 
-  const period = hour >= 12 ? "PM" : "AM";
+  const period = hour >= 12 && hour < 24 ? "PM" : "AM";
   const hour12 = hour % 12 || 12;
 
   return `${hour12}:${String(minute).padStart(2, "0")} ${period}`;

@@ -1,4 +1,4 @@
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 import { useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { loadDraft, saveDraft } from "../utils/localDraft";
@@ -8,20 +8,15 @@ import {
   CustomerStep2RightPanel,
   type ICustomerOnBoardingStep2Form,
 } from "./types/CustomerOnBoardingStep2Address.type";
+import { customerOnBoardStep2DefaultValues } from "../constants/DefaultValues";
+import { customInputCss } from "../constants/CustomInputCss";
 
 export default function CustomerOnboardingAddress() {
   const navigate = useNavigate();
 
   const defaultValues = loadDraft<ICustomerOnBoardingStep2Form>(
     CUSTOMER_STEP2_KEY,
-    {
-      streetAddress: "",
-      apt: "",
-      city: "",
-      state: "",
-      zip: "",
-      deliveryNotes: "",
-    }
+    customerOnBoardStep2DefaultValues
   );
 
   const {
@@ -53,40 +48,6 @@ export default function CustomerOnboardingAddress() {
       right={CustomerStep2RightPanel}
     >
       <form onSubmit={handleSubmit(onContinue)} className="space-y-6">
-        {/* Search / geocode UI (mock) */}
-        <div>
-          <label className="text-sm font-medium">Find address</label>
-          <div className="mt-2 flex h-12 items-center gap-2 rounded-xl ring-1 ring-slate-300 px-3">
-            <svg
-              className="h-5 w-5 text-slate-500"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              aria-hidden
-            >
-              <circle cx="11" cy="11" r="7" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
-            <input
-              className="flex-1 bg-transparent outline-none"
-              placeholder="Search by street, city, or postal code"
-            />
-            <button
-              type="button"
-              className="rounded-full bg-black px-3 py-1.5 text-sm font-medium text-white"
-            >
-              Search
-            </button>
-          </div>
-          <button
-            type="button"
-            className="mt-2 text-sm font-medium text-emerald-700 hover:underline"
-          >
-            Use current location
-          </button>
-        </div>
-
         {/* Manual fields */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <label className="md:col-span-2">
@@ -95,11 +56,11 @@ export default function CustomerOnboardingAddress() {
               {...register("streetAddress", {
                 required: "Street address is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="123 Main St"
             />
             {errors.streetAddress?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.streetAddress?.message}
               </span>
             )}
@@ -110,11 +71,11 @@ export default function CustomerOnboardingAddress() {
               {...register("apt", {
                 required: "Apt or unit is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="Apt 5B"
             />
             {errors.apt?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.apt?.message}
               </span>
             )}
@@ -125,11 +86,11 @@ export default function CustomerOnboardingAddress() {
               {...register("city", {
                 required: "City is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="San Francisco"
             />
             {errors.city?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.city?.message}
               </span>
             )}
@@ -140,11 +101,11 @@ export default function CustomerOnboardingAddress() {
               {...register("state", {
                 required: "State is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="CA"
             />
             {errors.state?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.state?.message}
               </span>
             )}
@@ -155,11 +116,11 @@ export default function CustomerOnboardingAddress() {
               {...register("zip", {
                 required: "Zip code is required",
               })}
-              className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+              className={customInputCss}
               placeholder="94103"
             />
             {errors.zip?.message && (
-              <span className="font-medium text-red-500">
+              <span className="font-medium text-red-500 text-sm">
                 {errors.zip?.message}
               </span>
             )}
@@ -168,21 +129,7 @@ export default function CustomerOnboardingAddress() {
 
         {/* Notes & options */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <label className="md:col-span-2">
-            <span className="text-sm font-medium">
-              Delivery notes (optional)
-            </span>
-            <textarea
-              className="mt-1 w-full rounded-xl ring-1 ring-slate-300 px-3 py-2 outline-none"
-              rows={3}
-              placeholder="Gate code, building, elevator instructions…"
-              {...register("deliveryNotes", {
-                // optional field; validate only if provided
-                setValueAs: (v) => (typeof v === "string" ? v.trim() : v),
-                maxLength: { value: 300, message: "Up to 300 characters" },
-              })}
-            />
-          </label>
+          <label className="md:col-span-2"></label>
           <label className="inline-flex items-center gap-2">
             <input
               type="checkbox"
@@ -190,15 +137,6 @@ export default function CustomerOnboardingAddress() {
             />
             <span className="text-sm text-slate-700">
               Set as default address
-            </span>
-          </label>
-          <label className="inline-flex items-center gap-2">
-            <input
-              type="checkbox"
-              className="h-4 w-4 rounded border-slate-300"
-            />
-            <span className="text-sm text-slate-700">
-              Leave at door by default
             </span>
           </label>
         </div>

@@ -53,10 +53,11 @@ const OperatingHoursForDashboard: React.FC<OperatingHoursForDashboard> = ({
       </header>
 
       <section className="py-2">
-        {sortArrayByDays(operatingHours)?.map((ophrs) => {
+        {sortArrayByDays(operatingHours)?.map((ophrs, index) => {
           const styleToday = ophrs.dayOfWeek === today && "font-semibold";
           return (
             <article
+              key={index}
               className={`${styleToday} text-sm group grid grid-cols-[100px_auto_auto_1fr] gap-5 hover:bg-gray-100`}
             >
               <div className={`${border} flex justify-end`}>

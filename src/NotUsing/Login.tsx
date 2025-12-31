@@ -1,10 +1,9 @@
-import React from "react";
 import uberEatsLogo from "../logos/logo.svg";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "../AuthContext";
 
-export const BASE_URL = "http://localhost:3002";
+import { loginUser } from "../api/userApi";
+import { useAuth } from "../ReactContext/auth/UseAuth";
 
 interface ILoginForm {
   email: string;
@@ -20,34 +19,19 @@ const Login = () => {
     handleSubmit,
     formState: { errors, isValid },
   } = useForm<ILoginForm>({
-    mode: "onChange",
+    mode: "onSubmit",
   });
 
   const onSubmit = async ({ email, password }: ILoginForm) => {
-    const res = await fetch(`${BASE_URL}/users/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    if (!res.ok) {
-      // show an error message if you want
-      return;
-    }
-
-    const data = await res.json();
+    const data = await loginUser(email, password);
 
     if (data?.token) {
-      // ⬇️ update AuthProvider state (this also stores the token + notifies)
       login(data.token);
-
-      // ⬇️ now the app is in the logged-in routing branch; navigate works
       navigate("/restaurants", { replace: true });
     }
   };
 
   return (
-    // <div className="h-screen flex items-center flex-col mt-[150px] lg:mt-28 px-10">
     <div id="main-frame" className="px-20">
       <div
         id="secondary-header"

@@ -1,5 +1,5 @@
 import React from "react";
-import WizardShell from "../components/WizardShell";
+import WizardShell from "../components/Shells/WizardShell";
 
 export default function CustomerOnboardingStep3Payment() {
   return (

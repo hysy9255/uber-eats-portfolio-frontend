@@ -1,44 +1,19 @@
 import { useEffect, useState } from "react";
-import RestaurantCard from "../components/RestaurantCard";
-import type { RestaurantV2 } from "./RestaurantPage";
-// import MainHeader from "../components/MainHeader/ClientMainHeader";
-// import SideBar from "../components/SideBar";
-
-import BannerTwo from "../promotion-banners/BannerTwo";
-import BannerCarousel from "../components/BannerCarousel";
-// import sampleImg1 from "../images/restaurants/chinese_tuxedo.jpeg";
-// import sampleImg2 from "../images/restaurants/La_Vita_Vino.webp";
-// import sampleImg3 from "../images/restaurants/samsen.jpg";
-// import NewHeader from "../components/MainHeader/NewHeader";
-// import uberEatsLogo from "../logos/logo.svg";
-// import hamburgerIcon from "../icons/hamburgerIcon.png";
-
-// import notificationIcon from "../icons/notification.png";
-// import shoppingCartIcon from "../icons/shopping-cart.png";
-// import { Link } from "react-router-dom";
-
-// import MainHeaderLoggedIn from "../components/MainHeader/MainHeaderLoggedIn";
-// import SecondaryHeaderUI from "../components/MainHeader/SecondaryHeaderUi";
-// import SecondaryHeaderLoggedOut from "../components/MainHeader/SecondaryHeaderLoggedOut";
-// import { MainHeaderLoggedOut } from "../components/MainHeader/MainHeaderLoggedOut";
-import MainFooter from "../components/MainFooter";
-import BannerOne from "../promotion-banners/BannerOne";
-import MainHeaderV2 from "../components/MainHeaderV2";
-import SearchBar from "../components/SearchBar";
+import RestaurantCard from "../components/Cards/RestaurantCard";
+import MainFooter from "../components/Footers/MainFooter";
+import MainHeaderV2 from "../components/Headers/MainHeaderV2";
 import CategoryList from "../components/CategoryList";
-import LoginButton from "../components/LoginButton";
-// import ClientMainHeader from "../components/MainHeader/ClientMainHeader";
-import ProfileHeader from "../components/ProfileHeader";
-import CartHeader from "../components/CartHeader";
-import AlarmHeader from "../components/AlarmHeader";
-// import HamburgerHeader from "../components/hamburgerHeader";
-
-// const globalXPadding = "px-[20px]";
-// const globalXPadding = "px-[20px]";
+import LoginButton from "../components/Buttons/LoginButton";
+import ProfileHeader from "../components/Headers/ProfileHeader";
+import CartHeader from "../components/Headers/CartHeader";
+import AlarmHeader from "../components/Headers/AlarmHeader";
+import GlobalLayout from "../components/GlobalLayout";
+import { getRestaurants } from "../api/restaurantApi";
+import type { Restaurant } from "./RestaurantPage";
 
 const RestaurantsPage = () => {
   // const [restaurants, setRestaurants] = useState<Restaurant[] | []>([]);
-  const [restaurants, setRestaurants] = useState<RestaurantV2[] | []>([]);
+  const [restaurants, setRestaurants] = useState<Restaurant[] | null>(null);
   // const [sideBarOpen, setSideBarOpen] = useState<boolean>(false);
 
   // const toggleSideBar = () => {
@@ -52,71 +27,76 @@ const RestaurantsPage = () => {
 
   useEffect(() => {
     const load = async () => {
-      const restaurantsResponse = await fetch(
-        "http://localhost:3002/restaurants",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
-      const restaurants = await restaurantsResponse.json();
-      console.log(restaurants);
+      const restaurants = await getRestaurants();
       setRestaurants(restaurants);
     };
     load();
   }, []);
 
-  const rail = "";
+  // if (!restaurants) return null;
+
   return (
-    <div className="px-3 select-none">
+    <GlobalLayout>
       <MainHeaderV2
-        layoutWidth={rail}
         // hamburger={<HamburgerHeader />}
         signIn={<LoginButton />}
-        searchBar={<SearchBar />}
+        // searchBar={<SearchBar />}
         profile={<ProfileHeader />}
         cart={<CartHeader />}
         alarm={<AlarmHeader />}
       />
-      <CategoryList />
-      <div
-        id="outer"
-        className={`relative h-min-screen flex flex-col my-[22px] bg-gray-50`}
+      <main
+        className="
+          py-2 
+          w-[100px] mx-auto
+          min-[460px]:w-[410px]
+          min-[700px]:w-[650px]
+          min-[1000px]:w-[950px]
+          min-[1300px]:w-[1250px]
+          min-[1800px]:w-[1750px]
+      "
       >
-        <div>
-          <BannerCarousel>
+        <CategoryList />
+
+        <div id="outer" className={``}>
+          <div>
+            {/* <BannerCarousel>
             <BannerTwo />
             <BannerOne />
-          </BannerCarousel>
+          </BannerCarousel> */}
 
-          <div className="text-3xl font-semibold py-3">Restaurants</div>
+            <div className="text-3xl font-semibold py-3">Restaurants</div>
 
-          <div
-            id="restaurant-list"
-            className="w-full grid md:grid-cols-2 lg:grid-cols-4 gap-6"
-          >
-            {restaurants.map((res) => (
-              <RestaurantCard
-                key={res.restaurantId}
-                restaurantId={res.restaurantId}
-                name={res.dba}
-                city={res.city}
-                zip={res.zip}
-                streetAddress={res.streetAddress}
-                prepTime={res.prepTime}
-                orderType={res.orderType}
-                restaurantImgUrl={res.mainImgUrl}
-                restaurantImgUrl2={res.sub1ImgUrl}
-                restaurantImgUrl3={res.sub2ImgUrl}
-              />
-            ))}
+            <div
+              id="restaurant-list"
+              className="
+              w-full grid 
+              min-[460px]:grid-cols-1
+              min-[700px]:grid-cols-2 
+              min-[1800px]:grid-cols-3 
+              gap-3"
+            >
+              {restaurants?.map((res) => (
+                <RestaurantCard
+                  key={res.restaurantId}
+                  restaurantId={res.restaurantId}
+                  name={res.dba}
+                  city={res.city}
+                  zip={res.zip}
+                  streetAddress={res.streetAddress}
+                  prepTime={res.prepTime}
+                  orderType={res.orderType}
+                  restaurantImgUrl={res.mainImgUrl}
+                  restaurantImgUrl2={res.sub1ImgUrl}
+                  restaurantImgUrl3={res.sub2ImgUrl}
+                />
+              ))}
+            </div>
           </div>
         </div>
-      </div>
-      <MainFooter />
-    </div>
+        <MainFooter />
+      </main>
+    </GlobalLayout>
   );
 };
 

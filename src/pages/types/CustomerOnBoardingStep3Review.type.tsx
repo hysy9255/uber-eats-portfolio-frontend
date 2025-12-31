@@ -4,9 +4,8 @@ export interface ICreateCustomer {
   role: string;
   firstName: string;
   lastName: string;
-  profileImgUrl?: string;
+  profileImgUrl: string | null;
   deliveryAddress: string;
-  deliveryNotes?: string;
   phoneNumber: string;
 }
 

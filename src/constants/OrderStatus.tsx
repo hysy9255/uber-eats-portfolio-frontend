@@ -1,6 +1,7 @@
 export enum OrderStatus {
   Pending = "Pending",
   Cooking = "Cooking",
+  Ready = "Ready",
   Delivering = "Delivering",
   Delivered = "Delivered",
 }
@@ -9,6 +10,7 @@ export enum StatusFilterOptions {
   allStatus = "All Status",
   pending = OrderStatus.Pending,
   cooking = OrderStatus.Cooking,
+  ready = OrderStatus.Ready,
   delivering = OrderStatus.Delivering,
   delivered = OrderStatus.Delivered,
 }

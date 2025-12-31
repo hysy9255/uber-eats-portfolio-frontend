@@ -5,7 +5,7 @@ export interface IDriverOnBoardingStep1Form {
   email: string;
   password: string;
   confirmPassword: string;
-  profileImgUrl?: string;
+  profileImgUrl: string | null;
 }
 
 export const DRIVER_STEP1_KEY = "onboard.driver.step1";

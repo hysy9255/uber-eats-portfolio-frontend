@@ -33,9 +33,13 @@ function to12h(totalMinutes: number) {
 
 export const TIME_OPTIONS = buildTimes();
 
-export const OPEN_TIME_OPTIONS: TimeOption[] = [...TIME_OPTIONS];
+export const OPEN_TIME_OPTIONS: TimeOption[] = [
+  ...TIME_OPTIONS,
+  { value: "closed", label: "Closed" },
+];
 
 export const CLOSE_TIME_OPTIONS: TimeOption[] = [
   ...TIME_OPTIONS,
   { value: "24:00", label: "12:00 AM (next day)" },
+  { value: "closed", label: "Closed" },
 ];

@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { getCurrentDateTime } from "../utils/getCurrentDateTime";
 import type { OperatingHours } from "../pages/RestaurantPage";
 import { convertToAMPM } from "../utils/convertToAMPM";
-import RightChevron from "./RightChevron";
-import DownChevron from "./DownChevron";
+import RightChevron from "./Icons/RightChevron";
+import DownChevron from "./Icons/DownChevron";
 import { sortArrayByDays } from "../utils/sortArrayByDays";
 
 const borderOn = "";

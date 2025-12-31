@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import star from "../icons/star.png";
 import logoutIcon from "../icons/logout.svg";
-import { useAuth } from "../AuthContext";
+import { useAuth } from "../ReactContext/auth/UseAuth";
 
 interface SideBarProps {
   toggleSideBar: () => void;

@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
-import Dropdown from "./Dropdown";
-import ImageUploadZone from "./ImageUploadZone";
+import Dropdown from "./Dropdowns/Dropdown";
+import ImageUploadZone from "./UploadZones/ImageUploadZone";
 import SuccessDialog from "./SuccessPopup";
 import { useForm } from "react-hook-form";
 import { uploadImage } from "../utils/uploadImg";
 import type { MenuList } from "../constants/MockOrdersData";
+import { DishCategory } from "../constants/DishCategoryEnums";
+import { customInputCss } from "../constants/CustomInputCss";
 
 export type EditDishFormData = {
   dishImgUrl: string;
@@ -16,16 +18,16 @@ export type EditDishFormData = {
 
 export type EditDishPayload = EditDishFormData;
 
-interface EdditMenuSidebarProps {
-  closeSideBar: () => void;
+interface EditMenuSidebarProps {
+  onClose: () => void; // 이름만 살짝 변경
   menuToEdit: MenuList | null;
-  handleEditDish: (data: EditDishFormData) => void;
+  handleUpdateDish: (data: EditDishFormData) => void;
 }
 
-const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
-  closeSideBar,
+const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
+  onClose,
   menuToEdit,
-  handleEditDish,
+  handleUpdateDish,
 }) => {
   const [newPreview, setNewPreview] = useState<string>(
     menuToEdit?.dishImgUrl ?? ""
@@ -34,6 +36,9 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
     menuToEdit?.category ?? "Apetizers"
   );
   const [showSuccess, setShowSuccess] = useState(false);
+
+  // 🔥 애니메이션용 로컬 상태
+  const [closing, setClosing] = useState(false);
 
   const {
     register,
@@ -63,27 +68,48 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
     setValue("category", categoryOption);
   }, [categoryOption, setValue]);
 
-  const editDishSubmit = (data: EditDishFormData) => {
-    handleEditDish(data);
+  const updateDishSubmit = (data: EditDishFormData) => {
+    handleUpdateDish(data);
     setShowSuccess(true);
+  };
+
+  // 🔥 공통 닫기 핸들러 (슬라이드 아웃 후 언마운트)
+  const handleClose = () => {
+    setClosing(true); // 클래스를 translate-x-full로 바뀌게
+    setTimeout(() => {
+      onClose();
+    }, 300); // duration-300 과 맞추기
   };
 
   return (
     <>
       {/* Overlay */}
-      <div className="fixed inset-0 bg-black/40 z-40" />
-      <section className="fixed top-0 right-0 h-full z-50 w-200 bg-white p-6">
+      <div
+        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-500 ${
+          closing ? "opacity-0" : "opacity-100"
+        }`}
+        onClick={handleClose}
+      />
+
+      {/* Sidebar */}
+      <section
+        className={`
+          fixed top-0 right-0 z-50 h-full w-200 bg-white p-6
+          transform transition-transform duration-500
+          ${closing ? "translate-x-full" : "translate-x-0"}
+        `}
+      >
         <h1 className="text-xl font-semibold">Edit Menu</h1>
 
         <form
-          onSubmit={handleSubmit(editDishSubmit)}
-          className="mt-4 grid grid-cols-1 md:grid-cols-6 gap-6 items-start"
+          onSubmit={handleSubmit(updateDishSubmit)}
+          className="mt-4 grid grid-cols-1 items-start gap-6 md:grid-cols-6"
         >
           {/* Left: photo */}
           <article className="md:col-span-2">
-            <div className="text-sm font-medium mb-1">Photo</div>
+            <div className="mb-1 text-sm font-medium">Photo</div>
             <ImageUploadZone
-              sizeClass="w-full"
+              className="w-full"
               previewSrc={newPreview || undefined}
               onSelected={onSelectImageUpload}
             />
@@ -93,12 +119,12 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
           </article>
 
           {/* Right: inputs */}
-          <article className="md:col-span-4 grid grid-cols-1 md:grid-cols-4 gap-4">
+          <article className="grid grid-cols-1 gap-4 md:col-span-4 md:grid-cols-4">
             <label className="md:col-span-4">
               <span className="text-sm font-medium">Item name</span>
               <input
                 {...register("name", { required: "Name is required" })}
-                className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+                className={customInputCss}
                 placeholder="Kung Pao Chicken"
               />
               {errors?.name?.message && (
@@ -111,9 +137,15 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
             <label className="md:col-span-2">
               <span className="text-sm font-medium">Category</span>
               <Dropdown
-                options={["Appetizers", "Mains", "Noodles", "Desserts"]}
+                options={[
+                  DishCategory.Appetizers,
+                  DishCategory.Mains,
+                  DishCategory.Desserts,
+                  DishCategory.Drinks,
+                ]}
                 option={categoryOption}
                 setOption={setCategoryOption}
+                widthCss="w-full"
               />
             </label>
 
@@ -125,7 +157,7 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
                 inputMode="decimal"
                 step="0.01"
                 min="0.01"
-                className="mt-1 h-11 w-full rounded-xl ring-1 ring-slate-300 px-3 outline-none"
+                className={customInputCss}
                 placeholder="12.00"
               />
               {errors?.price?.message && (
@@ -142,7 +174,7 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
                   required: "Description is required",
                 })}
                 rows={3}
-                className="mt-1 w-full rounded-xl ring-1 ring-slate-300 px-3 py-2 outline-none"
+                className={customInputCss}
                 placeholder="Spicy stir-fry with peanuts, chili and scallions."
               />
               {errors?.description?.message && (
@@ -151,17 +183,18 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
                 </span>
               )}
             </label>
+
             <div className="md:col-span-4 flex justify-end gap-6">
               <button
                 type="button"
-                onClick={closeSideBar}
-                className="ring-1 ring-slate-300 w-30 p-3 bg-white rounded-md hover:cursor-pointer hover:bg-gray-100 active:bg-gray-200"
+                onClick={handleClose}
+                className="w-30 rounded-md bg-white p-3 ring-1 ring-slate-300 hover:cursor-pointer hover:bg-gray-100 active:bg-gray-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
-                className="ring-1 ring-slate-300 w-30 p-3 bg-green-600 text-white rounded-md hover:cursor-pointer hover:bg-green-700 active:bg-green-800"
+                className="w-30 rounded-md bg-green-600 p-3 text-white ring-1 ring-slate-300 hover:cursor-pointer hover:bg-green-700 active:bg-green-800"
               >
                 Edit
               </button>
@@ -169,6 +202,7 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
           </article>
         </form>
       </section>
+
       <SuccessDialog
         open={showSuccess}
         title="Menu Edited"
@@ -177,7 +211,7 @@ const EditMenuSidebar: React.FC<EdditMenuSidebarProps> = ({
           setShowSuccess(false);
           reset();
           setNewPreview("");
-          closeSideBar();
+          handleClose();
         }}
       />
     </>
