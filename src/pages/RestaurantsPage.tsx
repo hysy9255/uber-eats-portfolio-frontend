@@ -1,102 +1,45 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "../components/Cards/RestaurantCard";
-import MainFooter from "../components/Footers/MainFooter";
-import MainHeaderV2 from "../components/Headers/MainHeaderV2";
-import CategoryList from "../components/CategoryList";
-import LoginButton from "../components/Buttons/LoginButton";
-import ProfileHeader from "../components/Headers/ProfileHeader";
-import CartHeader from "../components/Headers/CartHeader";
-import AlarmHeader from "../components/Headers/AlarmHeader";
-import GlobalLayout from "../components/GlobalLayout";
-import { getRestaurants } from "../api/restaurantApi";
-import type { Restaurant } from "./RestaurantPage";
+// import MainFooter from "../components/Footers/MainFooter";
+import { getRestaurantsPageView } from "../api/restaurantApi";
+import type { GetRestaurantsPageViewDTO } from "../dtos/GetRestaurantsPageView.dto";
 
 const RestaurantsPage = () => {
-  // const [restaurants, setRestaurants] = useState<Restaurant[] | []>([]);
-  const [restaurants, setRestaurants] = useState<Restaurant[] | null>(null);
-  // const [sideBarOpen, setSideBarOpen] = useState<boolean>(false);
-
-  // const toggleSideBar = () => {
-  //   if (sideBarOpen) {
-  //     setSideBarOpen(false);
-  //   }
-  //   if (!sideBarOpen) {
-  //     setSideBarOpen(true);
-  //   }
-  // };
+  const [restaurantsPageView, setRestaurantsPageView] =
+    useState<GetRestaurantsPageViewDTO>();
 
   useEffect(() => {
     const load = async () => {
-      const restaurants = await getRestaurants();
-      setRestaurants(restaurants);
+      const restaurantsPageView = await getRestaurantsPageView();
+      setRestaurantsPageView(restaurantsPageView);
     };
     load();
   }, []);
 
-  // if (!restaurants) return null;
-
   return (
-    <GlobalLayout>
-      <MainHeaderV2
-        // hamburger={<HamburgerHeader />}
-        signIn={<LoginButton />}
-        // searchBar={<SearchBar />}
-        profile={<ProfileHeader />}
-        cart={<CartHeader />}
-        alarm={<AlarmHeader />}
-      />
-      <main
-        className="
-          py-2 
-          w-[100px] mx-auto
-          min-[460px]:w-[410px]
-          min-[700px]:w-[650px]
-          min-[1000px]:w-[950px]
-          min-[1300px]:w-[1250px]
-          min-[1800px]:w-[1750px]
-      "
-      >
-        <CategoryList />
-
-        <div id="outer" className={``}>
-          <div>
-            {/* <BannerCarousel>
-            <BannerTwo />
-            <BannerOne />
-          </BannerCarousel> */}
-
-            <div className="text-3xl font-semibold py-3">Restaurants</div>
-
-            <div
-              id="restaurant-list"
-              className="
-              w-full grid 
-              min-[460px]:grid-cols-1
-              min-[700px]:grid-cols-2 
-              min-[1800px]:grid-cols-3 
-              gap-3"
-            >
-              {restaurants?.map((res) => (
-                <RestaurantCard
-                  key={res.restaurantId}
-                  restaurantId={res.restaurantId}
-                  name={res.dba}
-                  city={res.city}
-                  zip={res.zip}
-                  streetAddress={res.streetAddress}
-                  prepTime={res.prepTime}
-                  orderType={res.orderType}
-                  restaurantImgUrl={res.mainImgUrl}
-                  restaurantImgUrl2={res.sub1ImgUrl}
-                  restaurantImgUrl3={res.sub2ImgUrl}
-                />
-              ))}
-            </div>
-          </div>
-        </div>
-        <MainFooter />
-      </main>
-    </GlobalLayout>
+    <div
+      id="restaurant-list"
+      className="w-full grid 
+        grid-cols-1
+        min-[700px]:grid-cols-3 
+        gap-2 p-2"
+    >
+      {restaurantsPageView?.restaurantSummaries?.map((row, index) => (
+        <RestaurantCard
+          key={index}
+          restaurantId={row.generalInfo.restaurantId}
+          name={row.generalInfo.dba}
+          city={row.address.city}
+          zip={row.address.zip}
+          streetAddress={row.address.streetAddress}
+          prepTime={row.generalInfo.prepTime}
+          orderType={row.generalInfo.orderType}
+          restaurantImgUrl={row.generalInfo.mainImgUrl}
+          restaurantImgUrl2={row.generalInfo.sub1ImgUrl}
+          restaurantImgUrl3={row.generalInfo.sub2ImgUrl}
+        />
+      ))}
+    </div>
   );
 };
 

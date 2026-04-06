@@ -15,7 +15,6 @@ const ProfileOrLogoUploadZone: React.FC<ProfileOrLogoUploadZoneProps> = ({
 }) => {
   return (
     <div className="block col-span-2">
-      {/* <div className="text-sm font-medium mb-2">Profile photo</div> */}
       <div className="text-sm font-medium mb-2">{title}</div>
 
       {/* Preview */}
@@ -29,16 +28,10 @@ const ProfileOrLogoUploadZone: React.FC<ProfileOrLogoUploadZoneProps> = ({
             />
           ) : (
             defaultImgBackground
-            // <img
-            //   src={defaultImgBackground}
-            //   className="w-52 border rounded-full"
-            //   alt="Profile"
-            // ></img>
           )}
         </div>
 
         <div className="flex items-center gap-3">
-          {/* Remove button */}
           {profileImgPreview ? (
             <button
               type="button"

@@ -1,12 +1,13 @@
 import { createContext } from "react";
-import type { User } from "./AuthProvider";
+import type { UserDTO } from "../../dto/User.dto";
 
-type AuthCtx = {
+type AuthContextValue = {
   loggedIn: boolean;
   token: string | null;
-  user: User | null;
+  user: UserDTO;
+  setUser: React.Dispatch<React.SetStateAction<UserDTO>>;
   login: (token: string) => void;
   logout: () => void;
 };
 
-export const Ctx = createContext<AuthCtx | undefined>(undefined);
+export const AuthContext = createContext<AuthContextValue | null>(null);

@@ -1,54 +1,67 @@
-import CancelButton from "../Buttons/CancelButton";
-import RoundBorderXMarkButton from "../Buttons/IconBased/RoundBorderXMarkButton/RoundBorderXMarkButton";
-import SubmitButton from "../Buttons/SubmitButton";
+import { useFormContext } from "react-hook-form";
+import ProfilePageModalShell from "./ModalShell/ProfilePageModalShell";
+import { getToken } from "../../auth";
+import { updateMe } from "../../api/userApi";
+import type { UpdateProfileForm } from "../../formDataTypes/user/updateProfileForm.type";
+import type { UserDTO } from "../../dto/User.dto";
 
 interface ProfileImageEditModalProps {
   profilePreview: string;
   onClickClose: () => void;
+  setUserProfile: React.Dispatch<React.SetStateAction<UserDTO>>;
 }
 
 const ProfileImageEditModal: React.FC<ProfileImageEditModalProps> = ({
   profilePreview,
   onClickClose,
+  setUserProfile,
 }) => {
-  return (
-    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-      <div className="bg-white w-100 h-100 rounded-md flex flex-col justify-center items-center gap-y-6 relative">
-        <RoundBorderXMarkButton
-          onClick={onClickClose}
-          className="absolute top-2 right-2 
-          border-gray-300 hover:bg-gray-100 active:bg-gray-200"
-        />
-        <div
-          className={[
-            "border-2 border-dashed cursor-pointer transition",
-            "border-slate-300 bg-slate-50 hover:bg-slate-100",
-            "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400",
-            "overflow-hidden grid place-items-center relative",
-            "h-60 w-60",
-            "rounded-full",
-          ].join(" ")}
-        >
-          <img
-            src={profilePreview}
-            alt="preview"
-            className="h-full w-full object-cover absolute inset-0"
-          />
-        </div>
+  const token = getToken();
+  if (!token) throw new Error("No token");
 
-        <div className="flex gap-3">
-          <CancelButton
-            onClick={onClickClose}
-            className="px-2 py-2 rounded-full"
-          />
-          <SubmitButton
-            buttonName="Save as profile picture"
-            className="px-2 py-2 rounded-full"
-            onClick={() => console.log("hi")}
-          />
-        </div>
+  const { register, handleSubmit, reset } = useFormContext<UpdateProfileForm>();
+
+  const onSubmit = async (data: UpdateProfileForm) => {
+    await updateMe(token, data);
+    setUserProfile((prev) => {
+      if (!prev) return prev;
+      return { ...prev, profileImgUrl: data.profileImgUrl };
+    });
+    reset({ profileImgUrl: data.profileImgUrl });
+    onClickClose();
+  };
+
+  return (
+    <ProfilePageModalShell
+      onClickClose={onClickClose}
+      saveButtonName="save as profile picture"
+      formId="profile-image-edit-form"
+    >
+      <h3 className="font-semibold text-gray-700">New profile image</h3>
+      <form id="profile-image-edit-form" onSubmit={handleSubmit(onSubmit)}>
+        <input
+          type="hidden"
+          value={profilePreview}
+          {...register("profileImgUrl")}
+        />
+      </form>
+      <div
+        className={[
+          "border-2 cursor-pointer transition",
+          "border-slate-300 bg-slate-50 hover:bg-slate-100",
+          "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-400",
+          "overflow-hidden grid place-items-center relative",
+          "h-60 w-60",
+          "rounded-full",
+        ].join(" ")}
+      >
+        <img
+          src={profilePreview}
+          alt="preview"
+          className="h-full w-full object-cover absolute inset-0"
+        />
       </div>
-    </div>
+    </ProfilePageModalShell>
   );
 };
 

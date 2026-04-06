@@ -1,38 +1,36 @@
-// import defaultProfileImage from "../../images/profile/profile.png";
-
-import { useState } from "react";
-import HeaderDropDown from "../Dropdowns/HeaderDropDown";
+import { Link } from "react-router-dom";
 import { useAuth } from "../../ReactContext/auth/UseAuth";
 import DefaultProfileImg from "../Images/DefaultProfileImg/DefaultProfileImg";
+import { UserRole } from "../../constants/UserRoleEnum";
 
-const ProfileHeader = () => {
+interface ProfileHeaderProps {
+  className?: string;
+}
+
+const ProfileHeader: React.FC<ProfileHeaderProps> = ({ className }) => {
   const { user } = useAuth();
   const profileImg = user?.profileImgUrl;
 
-  const [dropDownOpen, setDropDownOpen] = useState<boolean>(false);
+  const directTo =
+    user.role === UserRole.Client
+      ? user.role
+      : user.role === UserRole.Owner
+      ? "dashboard"
+      : "undefined";
 
   return (
-    <>
-      <div
-        onClick={() => setDropDownOpen(!dropDownOpen)}
-        className="rounded-full 
-        p-[2px] bg-gradient-to-tr 
-        from-blue-600 via-teal-400 to-emerald-300
-        hover:cursor-pointer
-        "
-      >
-        {profileImg ? (
-          <img
-            alt="profileImage"
-            className="block h-[40px] w-[40px] rounded-full bg-white object-cover"
-            src={profileImg}
-          />
-        ) : (
-          <DefaultProfileImg className="block h-[40px] w-[40px] rounded-full bg-white object-cover" />
-        )}
-      </div>
-      {dropDownOpen && <HeaderDropDown />}
-    </>
+    <Link
+      to={`/${directTo}/profile`}
+      className={`${className} rounded-full 
+        h-[40px] w-[40px] overflow-hidden
+        hover:cursor-pointer`}
+    >
+      {profileImg ? (
+        <img alt="profileImage" className="object-cover" src={profileImg} />
+      ) : (
+        <DefaultProfileImg className="object-cover border border-gray-200 rounded-full" />
+      )}
+    </Link>
   );
 };
 

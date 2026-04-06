@@ -1,14 +1,22 @@
-export default function EmbedMapIframe({
-  //   address = "1600 Amphitheatre Parkway, Mountain View, CA",
-  address = "G/F, 23 Jervois Street, Sheung Wan, Hong Kong China",
-}) {
+interface EmbedMapIframeProps {
+  address: string;
+  aspectRatio?: string;
+}
+
+const EmbedMapIframe: React.FC<EmbedMapIframeProps> = ({
+  address,
+  aspectRatio,
+  // aspectRatio = "16/9",
+}) => {
   const q = encodeURIComponent(address);
   const src = `https://www.google.com/maps?q=${q}&output=embed`;
 
   return (
     <div
-      className="w-full border border-gray-300 rounded-md p-3"
-      style={{ aspectRatio: "16/9", minHeight: 240 }}
+      className="w-full h-full rounded-md"
+      style={aspectRatio ? { aspectRatio, minHeight: 240 } : undefined}
+
+      // style={{ aspectRatio: aspectRatio, minHeight: 240 }}
     >
       <iframe
         title={`Map of ${address}`}
@@ -19,4 +27,6 @@ export default function EmbedMapIframe({
       />
     </div>
   );
-}
+};
+
+export default EmbedMapIframe;

@@ -1,10 +1,11 @@
 import {
   AccountTypeOptions,
-  OrderTypeOptions,
-  PrepTimeOptions,
   TaxClassificationOptions,
 } from "../pages/types/constant.enums.type";
 import { defaultHours } from "../pages/types/OwnerOnBoardingStep3Location.type";
+import { AddressAliasType } from "./AddressAliasTypeEnums";
+import { DishCategory } from "./DishCategoryEnums";
+import { OrderType } from "./OrderType";
 
 export const commonAccountOnBoardStep1DefaultValues = {
   firstName: "",
@@ -22,6 +23,7 @@ export const customerOnBoardStep2DefaultValues = {
   city: "",
   state: "",
   zip: "",
+  alias: AddressAliasType.home,
 };
 
 export const ownerOnboardStep2DefaultValues = {
@@ -46,17 +48,22 @@ export const ownerOnboardStep3DefaultValues = {
   state: "",
   zip: "",
   hours: defaultHours,
-  deliveryRadius: "5",
-  prepTime: PrepTimeOptions.tenToFifteen,
-  orderType: OrderTypeOptions.deliveryAndPickup,
+  deliveryRadius: 5,
+  prepTime: 5,
+  orderType: OrderType.DeliveryAndPickup,
 };
 
 export const ownerOnboardStep4DefaultValues = {
-  items: [],
+  name: "",
+  price: 0,
+  category: DishCategory.Appetizers,
+  description: "",
+  imagePreview: "",
+  imageFile: null,
 };
 
 export const driverOnBoardStep2DefaultValues = {
-  vehicleType: "",
+  vehicleType: "car",
   model: "",
   year: "",
   color: "",

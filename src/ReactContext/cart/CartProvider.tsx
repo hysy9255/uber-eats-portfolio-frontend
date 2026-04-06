@@ -1,10 +1,20 @@
-import { useEffect, useState, type ReactNode } from "react";
-import type { CartItem } from "../../pages/DishPage";
+import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { CartContext } from "./CartContext";
+import { getRestaurantNameAndLogo } from "../../api/restaurantApi";
 
 interface CartProviderProps {
   children: ReactNode;
 }
+
+export type CartItem = {
+  dishId: string;
+  restaurantId: string;
+  name: string;
+  description: string;
+  price: number;
+  quantity: number;
+  dishImgUrl?: string;
+};
 
 export interface Cart {
   restaurantId: string | null;
@@ -51,8 +61,14 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     }
   };
 
+  const clearAndAddNewItem = (item: CartItem) => {
+    setCart({
+      restaurantId: item.restaurantId,
+      cartItems: [item],
+    });
+  };
+
   const emptyCart = () => {
-    localStorage.removeItem("cart");
     setCart(initialCartState);
   };
 
@@ -80,8 +96,9 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
     const isLastItem = cart.cartItems.length === 1;
     if (isLastItem) {
       const lastItem = cart.cartItems[0];
-      if (lastItem.quantity === 1) emptyCart();
-      else if (lastItem.quantity > 1)
+      if (lastItem.quantity === 1) {
+        emptyCart();
+      } else if (lastItem.quantity > 1)
         setCart((prev) => decrementQuantityByOne(prev));
       else {
         return;
@@ -112,8 +129,28 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
       (acc, ct) => acc + ct.price * ct.quantity,
       0
     );
-    return totalCost;
+    return Number(totalCost.toFixed(2));
   };
+
+  const [restaurantName, setRestaurantName] = useState<string>();
+  const [restaurantLogo, setRestaurantLogo] = useState<string>();
+
+  const loadRestaurantNameAndLogo = useCallback(async () => {
+    if (cart.restaurantId) {
+      const { restaurantName, restaurantLogo } = await getRestaurantNameAndLogo(
+        cart.restaurantId
+      );
+      setRestaurantName(restaurantName);
+      setRestaurantLogo(restaurantLogo);
+    } else {
+      setRestaurantName(undefined);
+      setRestaurantLogo(undefined);
+    }
+  }, [cart.restaurantId]);
+
+  useEffect(() => {
+    loadRestaurantNameAndLogo();
+  }, [loadRestaurantNameAndLogo]);
 
   return (
     <CartContext.Provider
@@ -121,9 +158,12 @@ export const CartProvider: React.FC<CartProviderProps> = ({ children }) => {
         cart,
         addItem,
         emptyCart,
+        clearAndAddNewItem,
         addDishQuantity,
         removeDishQuantity,
         calculatTotalCost,
+        restaurantName,
+        restaurantLogo,
       }}
     >
       {children}

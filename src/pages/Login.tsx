@@ -1,75 +1,73 @@
 import { Link, useNavigate } from "react-router-dom";
-import bannerImg from "../images/loginBanner.png";
-
 import { useForm } from "react-hook-form";
 import LoginPolicy from "../components/LoginPolicy";
-import MainHeaderV2 from "../components/Headers/MainHeaderV2";
-
-import GlobalLayout from "../components/GlobalLayout";
-import EmailIcon from "../icons/EmailIcon";
-import LockIcon2 from "../icons/LockIcon2";
-import ShowPasswordButton from "../components/Buttons/ShowPasswordButton";
-import { loginUser } from "../api/userApi";
+import GrayEmailIcon from "../components/Icons/GrayEmailIcon";
+import GrayLockIcon from "../components/Icons/GrayLockIcon";
+import ShowPasswordButton from "../components/Buttons/IconBased/EyeButton/EyeButton";
 import { useAuth } from "../ReactContext/auth/UseAuth";
-import SignUpButton from "../components/Buttons/SignUpButton";
-
-interface ILoginForm {
-  email: string;
-  password: string;
-}
+import LogInBannerImg from "../components/Images/LogInBannerImg/LogInBannerImg";
+import { UserRole } from "../constants/UserRoleEnum";
+import { loginUser } from "../api/authApi";
+import ErrorModal from "../components/Modals/ErrorModal";
+import { Fragment, useState } from "react";
+import type { LoginForm } from "../formDataTypes/auth/loginForm.type";
 
 export default function Login() {
   const navigate = useNavigate();
   const { login } = useAuth();
+  const [loginError, setLoginError] = useState<string>();
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<ILoginForm>({
+  } = useForm<LoginForm>({
     mode: "onSubmit",
   });
 
-  const onSubmit = async ({ email, password }: ILoginForm) => {
-    const data = await loginUser(email, password);
+  const onSubmit = async ({ email, password }: LoginForm) => {
+    try {
+      const data = await loginUser({ email, password });
 
-    if (data?.token) {
-      login(data.token);
+      if (data?.token) {
+        login(data.token);
 
-      if (data.role === "owner") {
-        navigate("/dashboard/overview", { replace: true });
-      } else {
-        navigate("/", { replace: true });
+        if (data.role === UserRole.Owner) {
+          navigate("/dashboard/overview", { replace: true });
+        } else if (data.role === UserRole.Client) {
+          navigate("/client/restaurants", { replace: true });
+        }
       }
+    } catch (error) {
+      const msg =
+        error instanceof Error
+          ? error.message
+          : "Login failed. Please try again.";
+
+      setLoginError(msg);
     }
   };
 
   return (
-    <GlobalLayout>
-      <MainHeaderV2 signIn={<SignUpButton />} />
-      <main
-        className={`
-        py-10 sm:py-12 
-        grid grid-cols-1 
-        min-[1000px]:grid-cols-2
-        min-[460px]:w-[410px]
-        min-[700px]:w-[650px]
-        min-[1000px]:w-[950px]
-        min-[1300px]:w-[1250px]
-        mx-auto
-        `}
-      >
+    <Fragment>
+      {loginError && (
+        <ErrorModal
+          onClickClose={() => setLoginError(undefined)}
+          errorMessage={loginError}
+        />
+      )}
+
+      <main className="grid grid-cols-1 min-[950px]:grid-cols-2 max-w-[950px] mx-auto min-h-screen content-center">
         <section
           className={`rounded-2xl ring-1 ring-black/10 shadow-sm
-                        p-8 flex flex-col `}
+                        p-5 flex flex-col `}
         >
-          <h1 className="text-3xl font-extrabold tracking-tight">
+          <h1 className="text-xl font-extrabold tracking-tight">
             Welcome back
           </h1>
-          <p className="mt-2 text-slate-600">Sign in to continue</p>
+          <p className="mt-2 text-sm text-slate-600">Sign in to continue</p>
 
           <form className="mt-6 space-y-4" onSubmit={handleSubmit(onSubmit)}>
-            {/* Email / phone */}
             <label className="block">
               <span className="mb-2 block text-sm font-medium">Email</span>
               <div
@@ -78,7 +76,7 @@ export default function Login() {
               bg-white ring-1 ring-black/10 px-3 
               focus-within:ring-black/20"
               >
-                <EmailIcon />
+                <GrayEmailIcon />
                 <input
                   {...register("email", {
                     required: "Email is required",
@@ -92,12 +90,12 @@ export default function Login() {
                 />
               </div>
               {errors.email?.message && (
-                <span className="font-medium text-red-500">
+                <span className=" text-red-500 text-xs">
                   {errors.email?.message}
                 </span>
               )}
               {errors.email?.type === "pattern" && (
-                <span className="font-medium text-red-500">
+                <span className="text-red-500 text-xs">
                   {"Please enter a valid email"}
                 </span>
               )}
@@ -112,7 +110,7 @@ export default function Login() {
                 </a>
               </div>
               <div className="flex items-center gap-2 h-12 rounded-xl bg-white ring-1 ring-black/10 px-3 focus-within:ring-black/20">
-                <LockIcon2 />
+                <GrayLockIcon />
                 <input
                   {...register("password", {
                     required: "Password is required",
@@ -125,7 +123,7 @@ export default function Login() {
                 <ShowPasswordButton />
               </div>
               {errors.password?.message && (
-                <span className="font-medium text-red-500">
+                <span className="text-xs text-red-500">
                   {errors.password?.message}
                 </span>
               )}
@@ -147,7 +145,9 @@ export default function Login() {
                             focus:outline-none focus-visible:ring-2 
                             focus-visible:ring-black/30 focus-visible:ring-offset-2
                              focus-visible:ring-offset-white
-                            disabled:opacity-60 disabled:pointer-events-none"
+                            disabled:opacity-60 disabled:pointer-events-none
+                            hover:cursor-pointer
+                            "
             >
               Sign in
             </button>
@@ -165,18 +165,8 @@ export default function Login() {
           <LoginPolicy />
         </section>
 
-        <aside
-          className={`
-            relative hidden 
-            min-[1000px]:block rounded-2xl 
-            overflow-hidden`}
-        >
-          <div
-            className="absolute inset-0 bg-gradient-to-br from-emerald-300 via-emerald-500 to-emerald-700 bg-cover bg-center"
-            style={{ backgroundImage: `url(${bannerImg})` }}
-          />
-        </aside>
+        <LogInBannerImg className="rounded-2xl bg-cover bg-center" />
       </main>
-    </GlobalLayout>
+    </Fragment>
   );
 }

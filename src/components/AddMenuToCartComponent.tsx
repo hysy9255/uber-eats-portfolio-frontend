@@ -35,11 +35,13 @@ const AddMenuToCartComponent: React.FC<AddMenuToCartComponentProps> = ({
         onClick={onClickAddToCart}
         className="
             h-10 w-full
-            cursor-pointer bg-green-400 
-            hover:bg-green-500 active:bg-green-600 
+             bg-black
+            hover:bg-black/90 active:bg-black/80
             text-white font-semibold 
             rounded-md 
-            flex items-center justify-center"
+            flex items-center justify-center
+            hover:cursor-pointer
+            "
       >
         Add to cart
       </button>

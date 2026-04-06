@@ -1,14 +1,11 @@
 import { createContext } from "react";
-import type {
-  Day,
-  DayHours,
-} from "../../pages/types/OwnerOnBoardingStep3Location.type";
+import type { Day } from "../../pages/types/OwnerOnBoardingStep3Location.type";
 import type { TimeOption } from "../../utils/timeOptions";
+import type { OperatingHoursDTO } from "../../dtos/restaurant/OperatingHours.dto";
 
 export type OperatingHoursContextValue = {
-  hours: Record<Day, DayHours>;
-  setHours: React.Dispatch<React.SetStateAction<Record<Day, DayHours>>>;
-  initialHours: Record<Day, DayHours>;
+  hours: OperatingHoursDTO;
+  setHours: React.Dispatch<React.SetStateAction<OperatingHoursDTO>>;
   activeField: string | null;
   setActiveField: React.Dispatch<React.SetStateAction<string | null>>;
   isEditing: boolean;

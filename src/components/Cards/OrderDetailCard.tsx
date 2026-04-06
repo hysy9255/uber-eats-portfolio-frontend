@@ -1,138 +1,146 @@
-import { useCallback, useEffect, useState } from "react";
 import { OrderStatus } from "../../constants/OrderStatus";
 import { StatusRing } from "../StatusRing";
-import { getOrderDetailView } from "../../api/orderApi";
 import { formatCurrency } from "../../utils/formatCurrency";
-import { getToken } from "../../auth";
 import SquareBorderXMarkButton from "../Buttons/IconBased/SquareBorderXMarkButton/SquareBorderXMarkButton";
+import type { GetOrderForOwnerDTO } from "../../dto/GetOrderForOwner.dto";
+import NoImgAvailable from "../Images/NoImgAvailable/NoImgAvailable";
+import { orderStatusMapper } from "../../utils/orderStatusMapper";
+import UpdateOrderStatusButton from "../Buttons/UpdateOrderButton";
+import { getToken } from "../../auth";
+import { updateOrderStatus } from "../../api/orderApi";
+import { useEffect, useState } from "react";
+import { useOwnerOrder } from "../../ReactContext/ownerOrder/UseOwnerOrder";
 
 interface OrderDetailCardProps {
-  targetOrderId: string | null;
-  onClickClose: () => void;
+  handleClose: () => void;
+  order?: GetOrderForOwnerDTO;
 }
 
-export type OrderItemDetail = {
-  dishImg: string;
-  name: string;
-  quantity: number;
-  price: number;
-  subTotal: number;
-};
-
-export type OrderDetail = {
-  orderId: string;
-  orderItems: OrderItemDetail[];
-  clientName: string;
-  totalPrice: number;
-  status: OrderStatus;
-  requestToRestaurant: string;
-};
-
 const OrderDetailCard: React.FC<OrderDetailCardProps> = ({
-  targetOrderId,
-  onClickClose,
+  handleClose,
+  order,
 }) => {
+  const { loadOrdersData } = useOwnerOrder();
   const token = getToken();
-  if (!token) throw new Error("No Token");
-
-  const [orderDetail, setOrderDetail] = useState<OrderDetail | null>(null);
-
-  const loadOrderData = useCallback(async () => {
-    if (targetOrderId) {
-      const orderDetailData = await getOrderDetailView(token, targetOrderId);
-
-      setOrderDetail(orderDetailData);
-    }
-  }, [token, targetOrderId]);
+  const [nextStatus, setNextStatus] = useState<
+    | OrderStatus.Cooking
+    | OrderStatus.Ready
+    | OrderStatus.Delivering
+    | OrderStatus.Delivered
+  >();
 
   useEffect(() => {
-    loadOrderData();
-  }, [loadOrderData]);
+    if (order?.orderInfo.status === OrderStatus.Pending)
+      setNextStatus(OrderStatus.Cooking);
+    if (order?.orderInfo.status === OrderStatus.Cooking)
+      setNextStatus(OrderStatus.Ready);
+    if (order?.orderInfo.status === OrderStatus.Ready)
+      setNextStatus(OrderStatus.Delivering);
+    if (order?.orderInfo.status === OrderStatus.Delivering)
+      setNextStatus(OrderStatus.Delivered);
+  }, [order?.orderInfo.status]);
+
+  const handleOnClickUpdateOrder = async () => {
+    if (!nextStatus || !order || !token) return;
+    await updateOrderStatus(token, order.orderInfo.orderId, {
+      status: nextStatus,
+    });
+    loadOrdersData();
+    handleClose();
+  };
 
   return (
-    <article className="order-2 border border-gray-300 rounded-2xl bg-neutral-200 p-3">
+    <article className="order-2 border border-gray-300 rounded-2xl bg-neutral-200 p-3 w-[500px] z-[200]">
       <div className="bg-stone-50 p-3 rounded-lg space-y-2">
-        <div className=" bg-slate-200 rounded-lg flex gap-x-4 p-2 items-center border relative">
-          <StatusRing current={1} total={5} status={OrderStatus.Pending} />
+        <section className=" bg-slate-200 rounded-lg flex gap-x-4 p-2 items-center border relative">
+          <StatusRing
+            current={orderStatusMapper(order?.orderInfo.status)}
+            status={OrderStatus.Pending}
+          />
           <div>
-            <div className="font-semibold text-lg">{orderDetail?.status}</div>
+            <div className="font-semibold text-lg">
+              {order?.orderInfo.status}
+            </div>
             <div>Order is waiting to be accepted</div>
           </div>
           <SquareBorderXMarkButton
             buttonClassName="hover:cursor-pointer absolute top-2 right-2"
             imgClassName="w-5 h-5"
-            onClick={onClickClose}
+            onClick={handleClose}
           />
-        </div>
+        </section>
 
-        <div>
+        <section>
           <div className="text-lg font-semibold">Task Info</div>
           <div className="grid grid-cols-3">
             <div className="border-l-2 border-gray-200 p-3">
               <div className="text-gray-500 font-medium text-sm">
                 Preparing time
               </div>
-              <div>00h : 25m : 30s</div>
+              <div className="text-xs">00h : 25m : 30s</div>
             </div>
             <div className="border-x-2 border-gray-200 p-3">
               <div className="text-gray-500 font-medium text-sm">Address</div>
-              <div>Lincoln street 45</div>
+              <div className="text-xs">{`${order?.deliveryAddressInfo.streetAddress} ${order?.deliveryAddressInfo.apt} ${order?.deliveryAddressInfo.city} ${order?.deliveryAddressInfo.state} ${order?.deliveryAddressInfo.zip}
+              `}</div>
             </div>
             <div className="border-r-2 border-gray-200 p-3">
               <div className="text-gray-500 font-medium text-sm">
-                {orderDetail?.clientName}
+                {order?.clientInfo.name}
               </div>
-              <div>+424 56778912</div>
+              <div className="text-xs">+{order?.clientInfo.phoneNumber}</div>
             </div>
           </div>
-        </div>
+        </section>
 
-        <div className="space-y-2 my-4">
-          {orderDetail?.orderItems.map((orderItem) => (
+        <section className="space-y-2 my-4 p-3 max-h-[300px] overflow-y-auto rounded-lg border border-gray-300">
+          {order?.orderItems.map((orderItem, index) => (
             <div
+              key={index}
               className={`
               grid grid-cols-[1fr_5fr] 
               gap-3
               text-gray-700 font-semibold text-sm  
-              
               `}
             >
-              <img className="aspect-4/3 rounded-lg" src={orderItem.dishImg} />
+              {orderItem.dishImg ? (
+                <img
+                  className="aspect-4/3 rounded-lg object-cover"
+                  src={orderItem.dishImg}
+                />
+              ) : (
+                <NoImgAvailable onlyText={true} />
+              )}
+
               <div className="border-b border-gray-300 grid grid-cols-[5fr_1fr_1fr] items-center">
                 <div>
                   {orderItem.name} ({formatCurrency(orderItem.price)})
                 </div>
                 <div>x{orderItem.quantity}</div>
                 <div className="flex justify-end">
-                  {formatCurrency(orderItem.subTotal)}
+                  {formatCurrency(orderItem.quantity * orderItem.price)}
                 </div>
               </div>
             </div>
           ))}
-        </div>
+        </section>
 
-        <div className="grid grid-cols-[3fr_1fr] gap-5">
+        <section className="grid grid-cols-[3fr_1fr] gap-5">
           <div className="border border-gray-300 rounded-lg p-2 text-gray-600">
             <div className="leading-none text-sm">
-              {orderDetail?.requestToRestaurant}
+              {order?.orderInfo.requestToRestaurant}
             </div>
           </div>
-          <div>
+          <div className="space-y-2">
             <div className="text-lg font-semibold flex justify-end">
-              ${orderDetail?.totalPrice}
+              ${order?.orderInfo.totalPrice}
             </div>
-            <div className="flex justify-end">
-              <button
-                className="
-                bg-orange-400 hover:bg-orange-500 active:bg-orange-600 
-                hover:cursor-pointer
-                text-white rounded-lg py-3 px-6 font-semibold text-nowrap"
-              >
-                Accept order
-              </button>
-            </div>
+            <UpdateOrderStatusButton
+              handleOnClick={handleOnClickUpdateOrder}
+              nextStatus={nextStatus}
+            />
           </div>
-        </div>
+        </section>
       </div>
     </article>
   );

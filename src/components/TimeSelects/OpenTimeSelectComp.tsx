@@ -4,11 +4,6 @@ import type { Day } from "../../pages/types/OwnerOnBoardingStep3Location.type";
 import { OPEN_TIME_OPTIONS, type TimeOption } from "../../utils/timeOptions";
 import { toMinutes } from "../../utils/toMinutes";
 import DownChevron from "../Icons/DownChevron";
-// import type { Day } from "../pages/types/OwnerOnBoardingStep3Location.type";
-// import { OPEN_TIME_OPTIONS, type TimeOption } from "../utils/timeOptions";
-// import { toMinutes } from "../utils/toMinutes";
-// import DownChevron from "./Icons/DownChevron";
-// import { useOperatingHours } from "../ReactContext/operatingHours/UseOperatingHours";
 
 interface OpenTimeSelectCompProps {
   day: Day;
@@ -67,7 +62,7 @@ const OpenTimeSelectComp: React.FC<OpenTimeSelectCompProps> = ({
                          `}
         onClick={() => handleClickDropdown("openTime", day)}
       >
-        <div className="text-xs">{time?.label ?? renderValue}</div>
+        <div className="text-xs line-clamp-1">{time?.label ?? renderValue}</div>
         <div>
           <DownChevron />
         </div>
@@ -79,8 +74,9 @@ const OpenTimeSelectComp: React.FC<OpenTimeSelectCompProps> = ({
             max-h-[224px] mt-0.4 w-full shadow-lg absolute
             "
         >
-          {timeOptions.map((ct) => (
+          {timeOptions.map((ct, index) => (
             <div
+              key={index}
               onClick={() => handleSelectTimeOption(ct)}
               className="px-3 py-1 text-xs hover:bg-gray-100 active:bg-gray-200"
             >

@@ -1,18 +1,21 @@
+import BlueButtonUI from "./ButtonUI/BlueButtonUI";
+
 interface EditButtonProps {
   onClick: () => void;
   className?: string;
+  buttonName?: string;
 }
-const EditButton: React.FC<EditButtonProps> = ({ onClick, className }) => {
+const EditButton: React.FC<EditButtonProps> = ({
+  onClick,
+  className,
+  buttonName = "Edit",
+}) => {
   return (
-    <button
+    <BlueButtonUI
+      buttonName={buttonName}
       onClick={onClick}
-      className={`leading-none font-semibold text-sm
-        bg-blue-100 text-blue-500 px-2 rounded-sm 
-        border border-blue-400 
-        hover:bg-blue-200 active:bg-blue-300 ${className}`}
-    >
-      Edit
-    </button>
+      className={className}
+    />
   );
 };
 

@@ -1,8 +1,14 @@
-import type { OperatingHours } from "../pages/RestaurantPage";
+import type { OperatingHoursDTO } from "../dtos/restaurant/OperatingHours.dto";
 
-export const sortArrayByDays = (arr?: OperatingHours[]): OperatingHours[] => {
-  if (!arr) return [];
+export const sortArrayByDays = (
+  operatingHours?: OperatingHoursDTO
+): { day?: string; open?: string; close?: string }[] => {
   const order = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-  const indexOf = (d: string) => order.indexOf(d);
-  return arr.sort((a, b) => indexOf(a.dayOfWeek) - indexOf(b.dayOfWeek));
+  return order.map((day) => {
+    return {
+      day,
+      open: operatingHours?.[day as keyof OperatingHoursDTO].open,
+      close: operatingHours?.[day as keyof OperatingHoursDTO].close,
+    };
+  });
 };

@@ -8,12 +8,22 @@ export enum OrderStatus {
 
 export enum StatusFilterOptions {
   allStatus = "All Status",
-  pending = OrderStatus.Pending,
-  cooking = OrderStatus.Cooking,
-  ready = OrderStatus.Ready,
-  delivering = OrderStatus.Delivering,
-  delivered = OrderStatus.Delivered,
+  Pending = OrderStatus.Pending,
+  Cooking = OrderStatus.Cooking,
+  Ready = OrderStatus.Ready,
+  Delivering = OrderStatus.Delivering,
+  Delivered = OrderStatus.Delivered,
 }
+
+export const statusOptionToStatus: Partial<
+  Record<StatusFilterOptions, OrderStatus>
+> = {
+  [StatusFilterOptions.Pending]: OrderStatus.Pending,
+  [StatusFilterOptions.Cooking]: OrderStatus.Cooking,
+  [StatusFilterOptions.Ready]: OrderStatus.Ready,
+  [StatusFilterOptions.Delivering]: OrderStatus.Delivering,
+  [StatusFilterOptions.Delivered]: OrderStatus.Delivered,
+};
 
 export enum TimeFilterOptions {
   allTime = "All Time",

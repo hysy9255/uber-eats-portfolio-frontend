@@ -1,6 +1,6 @@
 const LoginPolicy = () => {
   return (
-    <div className="mt-auto pt-8">
+    <div className="pt-8">
       <div className="relative overflow-hidden rounded-2xl bg-white/85 backdrop-blur ring-1 ring-black/10">
         {/* 상단 컬러 액센트 바 (두께↑) */}
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-emerald-400 via-emerald-500 to-blue-500" />

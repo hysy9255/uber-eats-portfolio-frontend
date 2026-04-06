@@ -1,12 +1,9 @@
 import { useState, type ReactNode } from "react";
-import {
-  type Day,
-  type IOwnerOnBoardingStep3Form,
-} from "../../pages/types/OwnerOnBoardingStep3Location.type";
-
+import { type Day } from "../../pages/types/OwnerOnBoardingStep3Location.type";
 import { type TimeOption } from "../../utils/timeOptions";
-import { OperatingHoursSetupContext } from "./operatingHoursSetupContext";
 import { useFormContext, useWatch } from "react-hook-form";
+import { OperatingHoursSetupContext } from "./OperatingHoursSetupContext";
+import type { OwnerOnBoardingForm } from "../../components/Layout/OwnerOnBoardLayout";
 
 interface OperatingHoursSetupProviderProps {
   children: ReactNode;
@@ -16,37 +13,37 @@ export const OperatingHoursSetupProvider: React.FC<
   OperatingHoursSetupProviderProps
 > = ({ children }) => {
   const { setValue, control, getValues } =
-    useFormContext<IOwnerOnBoardingStep3Form>();
-  const hours = useWatch({ control, name: "hours" });
+    useFormContext<OwnerOnBoardingForm>();
+  const hours = useWatch({ control, name: "step3.hours" });
 
   const [activeField, setActiveField] = useState<string | null>(null);
 
   const setOpenTime = (day: Day, timeOption: TimeOption) => {
-    setValue(`hours.${day}.open`, timeOption.value);
-    setValue(`hours.${day}.open24`, false);
-    setValue(`hours.${day}.closed`, false);
+    setValue(`step3.hours.${day}.open`, timeOption.value);
+    setValue(`step3.hours.${day}.open24`, false);
+    setValue(`step3.hours.${day}.closed`, false);
     setActiveField(null);
   };
 
   const setCloseTime = (day: Day, timeOption: TimeOption) => {
-    setValue(`hours.${day}.close`, timeOption.value);
-    setValue(`hours.${day}.open24`, false);
-    setValue(`hours.${day}.closed`, false);
+    setValue(`step3.hours.${day}.close`, timeOption.value);
+    setValue(`step3.hours.${day}.open24`, false);
+    setValue(`step3.hours.${day}.closed`, false);
     setActiveField(null);
   };
 
   const handleClickCheckBox = (day: Day, type: "closed" | "open24") => {
     if (type === "closed") {
-      const isClosed = getValues(`hours.${day}.closed`);
+      const isClosed = getValues(`step3.hours.${day}.closed`);
       if (isClosed) {
-        setValue(`hours.${day}`, {
+        setValue(`step3.hours.${day}`, {
           open: null,
           close: null,
           open24: false,
           closed: false,
         });
       } else {
-        setValue(`hours.${day}`, {
+        setValue(`step3.hours.${day}`, {
           open: "closed",
           close: "closed",
           open24: false,
@@ -54,16 +51,16 @@ export const OperatingHoursSetupProvider: React.FC<
         });
       }
     } else if (type === "open24") {
-      const isOpen24 = getValues(`hours.${day}.open24`);
+      const isOpen24 = getValues(`step3.hours.${day}.open24`);
       if (isOpen24) {
-        setValue(`hours.${day}`, {
+        setValue(`step3.hours.${day}`, {
           open: null,
           close: null,
           open24: false,
           closed: false,
         });
       } else {
-        setValue(`hours.${day}`, {
+        setValue(`step3.hours.${day}`, {
           open: "00:00",
           close: "24:00",
           open24: true,

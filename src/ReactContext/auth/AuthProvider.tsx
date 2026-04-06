@@ -1,42 +1,29 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { getToken } from "../../auth";
-import { getMyProfile } from "../../api/userApi";
-import { Ctx } from "./AuthContext";
-
-export type Role = "owner" | "client" | "driver";
-export type User = {
-  userId: string;
-  email: string;
-  name: string;
-  role: Role;
-  profileImgUrl: string | null;
-};
+import { getMe } from "../../api/userApi";
+import { AuthContext } from "./AuthContext";
+import { userRoleMap } from "../../utils/userRoleMapper";
+import type { UserDTO } from "../../dto/User.dto";
 
 export const TOKEN_KEY = "jwt-token";
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  // initialize from localStorage once
   const [token, setToken] = useState<string | null>(() => getToken());
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<UserDTO>();
 
   useEffect(() => {
     const load = async () => {
       if (!token) {
-        setUser(null);
         return;
       }
 
       try {
-        const profile = await getMyProfile(token);
-
+        const me = await getMe(token);
         setUser({
-          userId: profile.userId,
-          email: profile.email,
-          name: profile.name,
-          role: profile.role,
-          profileImgUrl: profile.profileImgUrl,
+          ...me,
+          role: userRoleMap[me.role],
         });
       } catch {
         console.log("error");
@@ -46,33 +33,36 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     load();
   }, [token]);
 
-  // keep in sync (same tab via custom 'auth' event, other tabs via 'storage')
   useEffect(() => {
     const sync = () => setToken(getToken());
     window.addEventListener("storage", sync);
-    // window.addEventListener("auth", sync);
     return () => {
       window.removeEventListener("storage", sync);
-      //   window.removeEventListener("auth", sync);
     };
   }, []);
 
   const login = (t: string) => {
     localStorage.setItem(TOKEN_KEY, t);
     setToken(t);
-    // window.dispatchEvent(new Event("auth"));
   };
 
   const logout = () => {
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
-    // window.dispatchEvent(new Event("auth"));
   };
 
-  const value = useMemo(
-    () => ({ loggedIn: !!token, token, user, login, logout }),
-    [token, user]
+  return (
+    <AuthContext.Provider
+      value={{
+        loggedIn: !!token,
+        token,
+        user: user!,
+        setUser: setUser as React.Dispatch<React.SetStateAction<UserDTO>>,
+        login,
+        logout,
+      }}
+    >
+      {children}
+    </AuthContext.Provider>
   );
-
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 };

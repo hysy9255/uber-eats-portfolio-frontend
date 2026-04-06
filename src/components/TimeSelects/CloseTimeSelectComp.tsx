@@ -67,7 +67,7 @@ const CloseTimeSelectComp: React.FC<CloseTimeSelectCompProps> = ({
                          `}
         onClick={() => handleClickDropdown("closeTime", day)}
       >
-        <div className="text-xs">{time?.label ?? renderValue}</div>
+        <div className="text-xs line-clamp-1">{time?.label ?? renderValue}</div>
         <div>
           <DownChevron />
         </div>
@@ -79,10 +79,11 @@ const CloseTimeSelectComp: React.FC<CloseTimeSelectCompProps> = ({
             max-h-[224px] absolute mt-0.4 w-full shadow-lg
             "
         >
-          {timeOptions.map((ct) => (
+          {timeOptions.map((ct, index) => (
             <div
+              key={index}
               onClick={() => handleSelectTimeOption(ct)}
-              className="px-3 py-1 text-xs hover:bg-gray-100 active:bg-gray-200"
+              className="px-3 py-1 text-xs hover:bg-gray-100 active:bg-gray-200 "
             >
               {ct.label}
             </div>

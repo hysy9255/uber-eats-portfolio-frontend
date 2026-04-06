@@ -6,9 +6,8 @@ const CategoryButton: React.FC<CategoryButtonProps> = ({ category }) => {
   return (
     <div
       className="px-3 py-1
-        text-slate-500  
-        border border-slate-500
-        bg-white
+        text-black/80  
+        bg-gray-200/60
         text-sm font-semibold
         rounded-md  
         hover:cursor-pointer"

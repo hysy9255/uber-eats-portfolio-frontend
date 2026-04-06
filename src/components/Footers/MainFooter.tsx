@@ -1,38 +1,41 @@
 import { type ReactNode } from "react";
 import { NavLink } from "react-router-dom";
-import { HeartIcon } from "../Icons/HeartIcon";
-import { HomeIcon } from "../Icons/HomeIcon";
-import { SearchIcon } from "../Icons/SearchIcon";
-import { ReceiptIcon } from "../Icons/ReceiptIcon";
-import { UserIcon } from "../Icons/UserIcon";
+import { HeartIcon } from "../Icons/MobileFooterIcons/HeartIcon";
+import { HomeIcon } from "../Icons/MobileFooterIcons/HomeIcon";
+import { ReceiptIcon } from "../Icons/MobileFooterIcons/ReceiptIcon";
+import { UserIcon } from "../Icons/MobileFooterIcons/UserIcon";
+import { useAuth } from "../../ReactContext/auth/UseAuth";
 
 type Item = {
   to: string;
   label: string;
   icon: (active: boolean) => ReactNode;
-  badge?: number; // e.g. for 주문내역 count
+  badge?: number;
 };
 
 const cx = (...cls: (string | false | undefined)[]) =>
   cls.filter(Boolean).join(" ");
 
 export default function MainFooter() {
+  const { loggedIn } = useAuth();
+
   const items: Item[] = [
-    { to: "/", label: "홈", icon: (a) => <HomeIcon active={a} /> },
-    { to: "/search", label: "검색", icon: (a) => <SearchIcon active={a} /> },
+    { to: "/", label: "Home", icon: (a) => <HomeIcon active={a} /> },
     {
       to: "/favorites",
-      label: "즐겨찾기",
+      label: "Favorites",
       icon: (a) => <HeartIcon active={a} />,
     },
     {
       to: "/orders",
-      label: "주문내역",
+      label: "History",
       icon: (a) => <ReceiptIcon active={a} />,
       badge: 2,
     },
-    { to: "/me", label: "마이", icon: (a) => <UserIcon active={a} /> },
+    { to: "/profile", label: "Profile", icon: (a) => <UserIcon active={a} /> },
   ];
+
+  if (!loggedIn) return null;
 
   return (
     <nav
@@ -45,7 +48,7 @@ export default function MainFooter() {
       role="navigation"
       aria-label="Bottom navigation"
     >
-      <ul className="mx-auto grid max-w-screen-sm grid-cols-5 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)]">
+      <ul className="mx-auto grid max-w-screen-sm grid-cols-4 px-2 pt-2 pb-[max(env(safe-area-inset-bottom),0.5rem)]">
         {items.map((item) => (
           <li key={item.to} className="flex items-stretch justify-center">
             <NavLink

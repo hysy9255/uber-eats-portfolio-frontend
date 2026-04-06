@@ -1,47 +1,32 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
-import InfoImg from "../logos/infoImg.png";
-import MainHeaderV2 from "../components/Headers/MainHeaderV2";
-import LoginButton from "../components/Buttons/LoginButton";
-import ProfileHeader from "../components/Headers/ProfileHeader";
-import CartHeader from "../components/Headers/CartHeader";
-import AlarmHeader from "../components/Headers/AlarmHeader";
-import GlobalLayout from "../components/GlobalLayout";
-import { getMyProfile } from "../api/userApi";
 import { useAuth } from "../ReactContext/auth/UseAuth";
-
 import ProfileContactComponent from "../components/ProfileContactComponent";
 import ProfileAccountComponent from "../components/ProfileAccountComponent";
 import ProfileSecurityComponent from "../components/ProfileSecurityComponent";
-import type { ProfileDTO } from "../api/DTOs";
-
 import {
   profileDescription1,
   profileDescription2,
 } from "../constants/Description";
 import ProfileImageEditModal from "../components/Modals/ProfileImageEditModal";
-
-export type UpdatePasswordForm = {
-  currentPassword: string;
-  newPassword: string;
-  confirmNewPassword: string;
-};
-
-export type UserProfile = ProfileDTO;
-
-export type UpdateProfileForm = { phoneNumber: string; profileImgUrl: string };
+import InfoPageIntroSection from "../components/InfoPageIntroSection";
+import ContactEditModal from "../components/Modals/ContactEditModal";
+import PasswordEditModal from "../components/Modals/PasswordEditModal";
+import type { UpdatePasswordForm } from "../formDataTypes/user/updatePasswordForm.type";
+import type { UpdateProfileForm } from "../formDataTypes/user/updateProfileForm.type";
 
 export const commonLayoutCss =
   "grid grid-cols-[auto_1fr_auto] gap-x-4 gap-y-4 text-[14px]";
 
 const Profile = () => {
-  const [userProfile, setUserProfile] = useState<UserProfile>();
   const [profilePreview, setProfilePreview] = useState<string | null>(null);
+
+  const { user, setUser: setUserProfile } = useAuth();
 
   const { token } = useAuth();
   if (!token) throw new Error("No token");
 
-  const contactFormMethods = useForm<UpdateProfileForm>({
+  const profileFormMethods = useForm<UpdateProfileForm>({
     mode: "onSubmit",
   });
 
@@ -49,97 +34,85 @@ const Profile = () => {
     mode: "onSubmit",
   });
 
-  const { reset: resetPhone } = contactFormMethods;
+  const { reset: resetPhone } = profileFormMethods;
 
   useEffect(() => {
-    if (profilePreview) setModalOpen(true);
-  }, [profilePreview]);
-
-  useEffect(() => {
-    const load = async () => {
-      const profile = await getMyProfile(token);
-      setUserProfile({
-        role: profile.role,
-        email: profile.email,
-        phoneNumber: profile.phoneNumber,
-        name: profile.name,
-        profileImgUrl: profile.profileImgUrl,
-      });
-
+    const load = () => {
       resetPhone({
-        phoneNumber: profile.phoneNumber,
+        phoneNumber: user?.phoneNumber,
       });
     };
 
     load();
-  }, [token, resetPhone]);
-
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  }, [resetPhone, user]);
 
   const handleClickCloseModal = () => {
-    setModalOpen(false);
+    setProfilePreview(null);
   };
 
-  return (
-    <GlobalLayout>
-      <MainHeaderV2
-        signIn={<LoginButton />}
-        profile={<ProfileHeader />}
-        cart={<CartHeader />}
-        alarm={<AlarmHeader />}
-      />
-      <main
-        className="py-2 
-                    w-[100px] mx-auto
-                    min-[460px]:w-[410px]
-                    min-[700px]:w-[650px]
-                    min-[1000px]:w-[950px]
-                    "
-      >
-        <section className="flex flex-col items-center justify-center gap-2">
-          <label className="text-2xl font-semibold">Personal Information</label>
-          <p>
-            Information about you and your preferences across Uber Eats services
-          </p>
-        </section>
-        <section className="grid gap-x-2 gap-y-4 my-10 min-[700px]:grid-cols-[1fr_auto]">
-          <div className="flex flex-col gap-2 order-2 min-[700px]::order-1">
-            <label className="text-2xl font-semibold">
-              Your profile info in Uber Eats services
-            </label>
-            <p>{profileDescription1}</p>
-          </div>
-          <div className="flex items-center justify-center order-1 min-[700px]:order-2">
-            <img src={InfoImg} className="w-[360px] h-[128px]"></img>
-          </div>
-        </section>
+  const [contactEditModalOpen, setContactEditModalOpen] =
+    useState<boolean>(false);
 
+  const [passwordEditModalOpen, setPasswordEditModalOpen] =
+    useState<boolean>(false);
+
+  return (
+    <Fragment>
+      <main
+        className="p-2 mx-auto max-w-[950px]
+        "
+      >
+        <InfoPageIntroSection
+          mainHeader="Personal Information"
+          mainDesc="Information about you and your preferences across Uber Eats services"
+          secondHeader="Your profile info in Uber Eats services"
+          secondDesc={profileDescription1}
+        />
         <section className="grid gap-6">
-          <ProfileAccountComponent
-            userProfile={userProfile}
-            setProfilePreview={setProfilePreview}
+          <FormProvider {...profileFormMethods}>
+            <ProfileAccountComponent
+              user={user}
+              setProfilePreview={setProfilePreview}
+            />
+          </FormProvider>
+          <ProfileContactComponent
+            user={user}
+            onClickEdit={() => setContactEditModalOpen(true)}
           />
-          <FormProvider {...contactFormMethods}>
-            <ProfileContactComponent userProfile={userProfile} />
-          </FormProvider>
-          <FormProvider {...securityFormMethods}>
-            <ProfileSecurityComponent />
-          </FormProvider>
+          <ProfileSecurityComponent
+            onClickEdit={() => setPasswordEditModalOpen(true)}
+          />
         </section>
         <section className={` text-gray-600 py-10`}>
           {profileDescription2}
         </section>
       </main>
 
-      {modalOpen && profilePreview && (
-        <ProfileImageEditModal
-          profilePreview={profilePreview}
-          onClickClose={handleClickCloseModal}
-        />
+      {profilePreview && (
+        <FormProvider {...profileFormMethods}>
+          <ProfileImageEditModal
+            profilePreview={profilePreview}
+            onClickClose={handleClickCloseModal}
+            setUserProfile={setUserProfile}
+          />
+        </FormProvider>
       )}
-
-      {/* <ProfileImageEditModal /> */}
-    </GlobalLayout>
+      {contactEditModalOpen && (
+        <FormProvider {...profileFormMethods}>
+          <ContactEditModal
+            onClickClose={() => setContactEditModalOpen(false)}
+            setUserProfile={setUserProfile}
+          />
+        </FormProvider>
+      )}
+      {passwordEditModalOpen && (
+        <FormProvider {...securityFormMethods}>
+          <PasswordEditModal
+            closeModal={() => setPasswordEditModalOpen(false)}
+          />
+        </FormProvider>
+      )}
+    </Fragment>
   );
 };
 

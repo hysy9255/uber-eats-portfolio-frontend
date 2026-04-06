@@ -14,9 +14,3 @@ export enum PrepTimeOptions {
   fifteenToTwenty = "15-20 min",
   twentyToThirty = "20-30 min",
 }
-
-export enum OrderTypeOptions {
-  deliveryAndPickup = "Delivery & Pickup",
-  deliveryOnly = "Delivery only",
-  pickupOnly = "Pickup only",
-}

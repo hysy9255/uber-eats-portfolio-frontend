@@ -10,7 +10,9 @@ export function loadDraft<T>(key: string, fallback: T): T {
 export function saveDraft<T>(key: string, data: T) {
   try {
     localStorage.setItem(key, JSON.stringify(data));
-  } catch {}
+  } catch (error) {
+    console.error(error);
+  }
 }
 export function clearDraft(key: string) {
   localStorage.removeItem(key);

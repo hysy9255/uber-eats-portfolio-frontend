@@ -8,16 +8,16 @@ const STATUS_COLOR: Record<OrderStatus, string> = {
 };
 
 type Props = {
-  current: number; // e.g. 1
-  total: number; // e.g. 4
+  current: number;
+  total?: number;
   status: OrderStatus;
-  size?: number; // px
-  stroke?: number; // px
+  size?: number;
+  stroke?: number;
 };
 
 export function StatusRing({
   current,
-  total,
+  total = 5,
   status,
   size = 44,
   stroke = 5,

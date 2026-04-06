@@ -1,41 +1,40 @@
-import type {
-  Day,
-  DayHours,
-} from "../pages/types/OwnerOnBoardingStep3Location.type";
+import type { GetRestaurantNameAndLogoDTO } from "../dtos/GetRestaurantName.dto";
+import type { GetRestaurantPageViewDTO } from "../dtos/GetRestaurantPageView.dto";
+import type { GetRestaurantsPageViewDTO } from "../dtos/GetRestaurantsPageView.dto";
+import type { GetMyRestaurantForOwnerDashboardDTO } from "../dtos/GetMyRestaurantForOwnerDashboard.dto";
+import type { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
+import { API_BASE_URL, COMMON_HEADERS } from "./baseUrl";
 
-export type UpdateRestaurantPayload = {
-  lbn?: string;
-  dba?: string;
-  cuisineType?: string;
-  storePhone?: string;
-  businessEmail?: string;
-  website?: string | null;
-  instagram?: string | null;
-  streetAddress?: string;
-  unit?: string;
-  city?: string;
-  zip?: string;
-  state?: string;
-  hours?: Record<Day, DayHours>;
-};
+export const getRestaurantsPageView =
+  async (): Promise<GetRestaurantsPageViewDTO> => {
+    const res = await fetch(`${API_BASE_URL}/restaurants`, {
+      method: "GET",
+      headers: COMMON_HEADERS,
+    });
 
-export const getRestaurants = async () => {
-  const res = await fetch(`http://localhost:3002/restaurants`, {
+    if (!res.ok) throw new Error(await res.text());
+    return await res.json();
+  };
+
+export const getRestaurantPageView = async (
+  restaurantId: string
+): Promise<GetRestaurantPageViewDTO> => {
+  const res = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}/view`, {
     method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
+    headers: COMMON_HEADERS,
   });
-
   if (!res.ok) throw new Error(await res.text());
+
   return await res.json();
 };
 
-export const getMyRestaurant = async (token: string) => {
-  const res = await fetch("http://localhost:3002/restaurants/my-restaurant", {
+export const getMyRestaurantForOwnerDashboard = async (
+  token: string
+): Promise<GetMyRestaurantForOwnerDashboardDTO> => {
+  const res = await fetch(`${API_BASE_URL}/restaurants/my-restaurant`, {
     method: "GET",
     headers: {
-      "Content-Type": "application/json",
+      ...COMMON_HEADERS,
       "jwt-token": token,
     },
   });
@@ -43,45 +42,29 @@ export const getMyRestaurant = async (token: string) => {
   return await res.json();
 };
 
-export const getRestaurantPageView = async (restaurantId: string) => {
-  const res = await fetch(
-    `http://localhost:3002/restaurants/${restaurantId}/view`,
-    {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }
-  );
-  if (!res.ok) throw new Error(await res.text());
-
-  return await res.json();
-};
-
-export const getRestaurantName = async (
+export const getRestaurantNameAndLogo = async (
   restaurantId: string
-): Promise<string> => {
+): Promise<GetRestaurantNameAndLogoDTO> => {
   const res = await fetch(
-    `http://localhost:3002/restaurants/restaurantName/${restaurantId}`,
+    `${API_BASE_URL}/restaurants/restaurantName/${restaurantId}`,
     {
       method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: COMMON_HEADERS,
     }
   );
   if (!res.ok) throw new Error(await res.text());
-  return await res.text();
+  return await res.json();
 };
 
 export const updateRestaurant = async (
   token: string,
-  payload: UpdateRestaurantPayload
+  payload: UpdateRestaurantDTO
 ) => {
-  const res = await fetch(`http://localhost:3002/restaurants`, {
+  console.log("payload", payload);
+  const res = await fetch(`${API_BASE_URL}/restaurants`, {
     method: "PATCH",
     headers: {
-      "Content-Type": "application/json",
+      ...COMMON_HEADERS,
       "jwt-token": token,
     },
     body: JSON.stringify(payload),

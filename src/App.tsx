@@ -7,145 +7,161 @@ import Profile from "./pages/Profile";
 import { AuthProvider } from "./ReactContext/auth/AuthProvider";
 import CreateAccountChoice from "./pages/CreateAccountChoice";
 import Login from "./pages/Login";
-import DriverOnboardingDocs from "./pages/DriverOnBoardingStep3Doc";
-import DriverOnboardingVehicle from "./pages/DriverOnboardingStep2Vehicle";
-import DriverOnboardingBackground from "./pages/DriverOnboardingStep4Background";
-import DriverOnboardingPayout from "./pages/DriverOnboardingStep5Payout";
-import OwnerOnboardingBusiness from "./pages/OwnerOnboardingStep2Business";
-import OwnerOnboardingReview from "./pages/OwnerOnboardingStep5Review";
-import OwnerOnBoardingLocation from "./pages/OwnerOnboardingStep3Location";
-import OwnerOnboardingMenu from "./pages/OwnerOnboardingStep4Menu";
-import OwnerOnboardingAccount from "./pages/OwnerOnboardingStep1Account";
-import DriverOnboardingAccount from "./pages/DriverOnboardingStep1Account";
-import DriverOnboardingReview from "./pages/DriverOnboardingStep6Review";
-import CustomerOnboardingAddress from "./pages/CustomerOnboardingStep2Address";
-import CustomerOnboardingReview from "./pages/CustomerOnboardingStep3Review";
-import OwnerDashboardOrders2 from "./pages/OwnerDashboardOrders2";
-import OwnerDashboardOverview2 from "./pages/OwnerDashboardOverview2";
-import OwnerDashboardMenus from "./pages/OwnerDashboardMenus";
-import OwnerDashboardSetting from "./pages/OwnerDashboardSetting";
-import OwnerDashboardShell from "./components/Shells/OwnerDashboardShell";
+import OwnerDashboardOrders from "./pages/OwnerDashboard/OwnerDashboardOrders";
+import OwnerDashboardOverview from "./pages/OwnerDashboard/OwnerDashboardOverview";
+import OwnerDashboardMenus from "./pages/OwnerDashboard/OwnerDashboardMenus";
+import OwnerDashboardSetting from "./pages/OwnerDashboard/OwnerDashboardSetting";
 import CartPage from "./pages/CartPage";
-import { CartProvider } from "./ReactContext/cart/CartProvider";
-import { OnBoardingAccountProvider } from "./ReactContext/onBoardingAccount/OnBoardingAccountProvider";
-import { CustomerOnboardingAccount } from "./pages/CustomerOnBoardingStep1Account";
 import { useAuth } from "./ReactContext/auth/UseAuth";
 import { UserRole } from "./constants/UserRoleEnum";
+import ManageDeliveryAddress from "./pages/ManageDeliveryAddress";
+import OrderConfirm from "./pages/OrderConfirm";
+import TrackOrder from "./pages/TrackOrder";
+import ScrollToTop from "./ScrollToTop";
+import OnGoingOrders from "./pages/OnGoingOrders";
+import OrderHistory from "./pages/OrderHistory";
+import OnBoardLayout from "./components/Layout/OnBoardLayout";
+import ClientStep1Account from "./pages/onBoarding/Client/ClientStep1Account";
+import ClientStep2Address from "./pages/onBoarding/Client/ClientStep2Address";
+import ClientStep3Review from "./pages/onBoarding/Client/ClientStep3Review";
+import ClientOrderLayout from "./components/Layout/ClientOrderLayout";
+import ClientOnBoardLayout from "./components/Layout/ClientOnBoardLayout";
+import OwnerOnBoardLayout from "./components/Layout/OwnerOnBoardLayout";
+import OwnerStep2Business from "./pages/onBoarding/Owner/OwnerStep2Business";
+import OwnerStep1Account from "./pages/onBoarding/Owner/OwnerStep1Account";
+import OwnerStep3LocationAndTime from "./pages/onBoarding/Owner/OwnerStep3LocationAndTime";
+import OwnerStep4Menu from "./pages/onBoarding/Owner/OwnerStep4Menu";
+import OwnerStep5Review from "./pages/onBoarding/Owner/OwnerStep5Review";
+import ClientPageShell from "./components/Shells/ClientPageShell";
+import OwnerPageShell from "./components/Shells/OwnerPageShell";
+import PublicPageShell from "./components/Shells/PublicPageShell";
+import SocketBootstrap from "./SocketBootstrap";
+import { GeneralSideBarProvider } from "./ReactContext/GeneralSideBar/GeneralSideBarProvider";
+// import LogoPractice from "./LogoPractice";
+// import CssPractice from "./pages/CssPractice";
+// import CssPractice2 from "./pages/CssPractice2";
 
 function AppRoutes() {
   const { loggedIn, user } = useAuth();
 
   const publicRoutes = [
-    { path: "*", element: <Navigate to="/login" replace /> },
-    { path: "/", element: <RestaurantsPage /> },
-    { path: "/restaurants/:restaurantId", element: <RestaurantPage /> },
-    { path: "/login", element: <Login /> },
-    { path: "/create-account-choice", element: <CreateAccountChoice /> },
+    // { path: "practice2", element: <CssPractice /> },
+    // { path: "practice3", element: <CssPractice2 /> },
     {
-      path: "/customer-on-board-step-1",
-      element: (
-        <OnBoardingAccountProvider navigateTo="/customer-on-board-step-2">
-          <CustomerOnboardingAccount />
-        </OnBoardingAccountProvider>
-      ),
-    },
-    {
-      path: "/customer-on-board-step-2",
-      element: <CustomerOnboardingAddress />,
-    },
-    {
-      path: "/customer-on-board-step-3",
-      element: <CustomerOnboardingReview />,
-    },
-    {
-      path: "/driver-on-board-step-1",
-      element: (
-        <OnBoardingAccountProvider navigateTo="/driver-on-board-step-2">
-          <DriverOnboardingAccount />
-        </OnBoardingAccountProvider>
-      ),
-    },
-    {
-      path: "/driver-on-board-step-2",
-      element: <DriverOnboardingVehicle />,
-    },
-    {
-      path: "/driver-on-board-step-3",
-      element: <DriverOnboardingDocs />,
-    },
-    {
-      path: "/driver-on-board-step-4",
-      element: <DriverOnboardingBackground />,
-    },
-    {
-      path: "/driver-on-board-step-5",
-      element: <DriverOnboardingPayout />,
-    },
-    {
-      path: "/driver-on-board-step-6",
-      element: <DriverOnboardingReview />,
-    },
-    {
-      path: "/driver-on-board",
-      element: <DriverOnboardingDocs />,
-    },
-    {
-      path: "/owner-on-board-step-1",
-      element: (
-        <OnBoardingAccountProvider navigateTo="/owner-on-board-step-2">
-          <OwnerOnboardingAccount />
-        </OnBoardingAccountProvider>
-      ),
-    },
-    {
-      path: "/owner-on-board-step-2",
-      element: <OwnerOnboardingBusiness />,
-    },
-    {
-      path: "/owner-on-board-step-3",
-      element: <OwnerOnBoardingLocation />,
-    },
-    {
-      path: "/owner-on-board-step-4",
-      element: <OwnerOnboardingMenu />,
-    },
-    {
-      path: "/owner-on-board-step-5",
-      element: <OwnerOnboardingReview />,
+      element: <PublicPageShell />,
+      children: [
+        { path: "*", element: <Navigate to="/login" replace /> },
+        { path: "/login", element: <Login /> },
+        { path: "/create-account-choice", element: <CreateAccountChoice /> },
+        {
+          element: <OnBoardLayout />,
+          path: "/on-board",
+          children: [
+            {
+              path: "client",
+              element: <ClientOnBoardLayout />,
+              children: [
+                {
+                  path: "step1",
+                  element: <ClientStep1Account />,
+                },
+                {
+                  path: "step2",
+                  element: <ClientStep2Address />,
+                },
+                {
+                  path: "step3",
+                  element: <ClientStep3Review />,
+                },
+              ],
+            },
+            {
+              path: "owner",
+              element: <OwnerOnBoardLayout />,
+              children: [
+                {
+                  path: "step1",
+                  element: <OwnerStep1Account />,
+                },
+                {
+                  path: "step2",
+                  element: <OwnerStep2Business />,
+                },
+                {
+                  path: "step3",
+                  element: <OwnerStep3LocationAndTime />,
+                },
+                {
+                  path: "step4",
+                  element: <OwnerStep4Menu />,
+                },
+                {
+                  path: "step5",
+                  element: <OwnerStep5Review />,
+                },
+              ],
+            },
+          ],
+        },
+      ],
     },
   ];
 
   const clientRoutes = [
     {
-      path: "/",
-      element: <RestaurantsPage />,
-    },
-    {
-      path: "/restaurants/:restaurantId",
-      element: <RestaurantPage />,
-    },
-    {
-      path: "/restaurants/:restaurantId/dishes/:dishId",
-      element: <DishPage />,
-    },
-    {
-      path: "/cart",
-      element: <CartPage />,
+      path: "/client",
+      element: <ClientPageShell />,
+      children: [
+        { path: "restaurants", element: <RestaurantsPage /> },
+        {
+          path: "on-going-orders",
+          element: <OnGoingOrders />,
+        },
+        {
+          path: "order-history",
+          element: <OrderHistory />,
+        },
+        {
+          path: "delivery-address",
+          element: <ManageDeliveryAddress />,
+        },
+        {
+          path: "cart",
+          element: <CartPage />,
+        },
+        {
+          path: "restaurants/:restaurantId",
+          element: <RestaurantPage />,
+        },
+
+        {
+          path: "restaurants/:restaurantId/dishes/:dishId",
+          element: <DishPage />,
+        },
+        {
+          element: <ClientOrderLayout />,
+          children: [
+            { path: "order-confirm/:orderId", element: <OrderConfirm /> },
+            { path: "track-order/:orderId", element: <TrackOrder /> },
+          ],
+        },
+        { path: "profile", element: <Profile /> },
+      ],
     },
   ];
 
   const ownerRoutes = [
     {
       path: "/dashboard",
-      element: <OwnerDashboardShell />,
+      element: <OwnerPageShell />,
       children: [
         {
           path: "overview",
-          element: <OwnerDashboardOverview2 />,
+          element: <OwnerDashboardOverview />,
         },
         {
           path: "orders",
-          element: <OwnerDashboardOrders2 />,
+          element: <OwnerDashboardOrders />,
         },
         {
           path: "menus",
@@ -155,22 +171,17 @@ function AppRoutes() {
           path: "setting",
           element: <OwnerDashboardSetting />,
         },
+        { path: "profile", element: <Profile /> },
       ],
     },
   ];
 
-  // const driverRoutes = [];
-
-  const authedCommon = [
-    { path: "/profile", element: <Profile /> },
-    { path: "*", element: <PageNotFound /> },
-  ];
+  const authedCommon = [{ path: "*", element: <PageNotFound /> }];
 
   const routes = loggedIn
     ? [
         ...(user?.role === UserRole.Client ? clientRoutes : []),
         ...(user?.role === UserRole.Owner ? ownerRoutes : []),
-        // ...(user?.role === UserRole.Driver ? driverRoutes : []),
         ...authedCommon,
       ]
     : publicRoutes;
@@ -179,13 +190,15 @@ function AppRoutes() {
 }
 
 export default function App() {
+  SocketBootstrap();
   return (
     <AuthProvider>
-      <CartProvider>
-        <BrowserRouter>
+      <BrowserRouter>
+        <GeneralSideBarProvider>
+          <ScrollToTop />
           <AppRoutes />
-        </BrowserRouter>
-      </CartProvider>
+        </GeneralSideBarProvider>
+      </BrowserRouter>
     </AuthProvider>
   );
 }

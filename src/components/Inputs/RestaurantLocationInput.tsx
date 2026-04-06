@@ -1,14 +1,12 @@
-import { useFormContext } from "react-hook-form";
-import type { LocationAndOperatingHoursEditForm } from "../LocationAndOperatingHoursEditor";
-import { useOperatingHours } from "../../ReactContext/operatingHours/UseOperatingHours";
-
-type FieldName = keyof LocationAndOperatingHoursEditForm;
+import { useFormContext, type FieldPath } from "react-hook-form";
+import type { EditLocationAndOperatingHoursForm } from "../../formDataTypes/restaurant/editLocationAndHoursForm.type";
 
 interface RestaurantLocationInputProps {
   title: string;
-  fieldName: FieldName;
+  fieldName: FieldPath<EditLocationAndOperatingHoursForm>;
   isRequired?: boolean;
   className?: string;
+  isEditing?: boolean;
 }
 
 const RestaurantLocationInput: React.FC<RestaurantLocationInputProps> = ({
@@ -16,9 +14,8 @@ const RestaurantLocationInput: React.FC<RestaurantLocationInputProps> = ({
   fieldName,
   isRequired = true,
   className,
+  isEditing,
 }) => {
-  const { isEditing } = useOperatingHours();
-
   const {
     register,
     formState: { errors },

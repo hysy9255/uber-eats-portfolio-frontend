@@ -7,7 +7,7 @@ const CartHeader = () => {
   const number = cart.cartItems.length;
 
   return (
-    <Link to="/cart">
+    <Link to="/client/cart">
       <div className="w-[35px] h-[35px] relative">
         <ShoppingBagIcon
           children={

@@ -1,13 +1,16 @@
 import { useRef, useState } from "react";
-import type { ImportResult } from "../../pages/OwnerOnboardingStep4Menu";
+import { parseDishCsv } from "../../api/draftApi";
+import type { DraftItem } from "../../formDataTypes/onBoarding/ownerOnBoardingForms.type";
 
-type Props = {
-  // draftId: string;
+type CsvUploadzoneProps = {
   mode?: "append" | "replace";
-  onUploaded?: (result: ImportResult) => void;
+  onUploaded?: (result: DraftItem[]) => void;
 };
 
-export default function CsvUploadzone({ mode = "append", onUploaded }: Props) {
+const CsvUploadzone: React.FC<CsvUploadzoneProps> = ({
+  mode = "append",
+  onUploaded,
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [resetKey, setResetKey] = useState(0);
 
@@ -31,13 +34,9 @@ export default function CsvUploadzone({ mode = "append", onUploaded }: Props) {
     fd.append("file", file);
     fd.append("mode", mode);
 
-    const res = await fetch(
-      `http://localhost:3002/owner/drafts/menu/import?mode=${mode}`,
-      { method: "POST", body: fd }
-    );
-    if (!res.ok) throw new Error(`Upload failed: ${res.status}`);
-    const json = await res.json();
-    onUploaded?.(json);
+    const parsed = await parseDishCsv(mode, fd);
+    console.log(parsed);
+    onUploaded?.(parsed.items);
   };
 
   const handleChange = async (files?: FileList | null) => {
@@ -61,7 +60,6 @@ export default function CsvUploadzone({ mode = "append", onUploaded }: Props) {
       role="button"
       tabIndex={0}
       aria-label="Upload CSV"
-      // (optional) prevent accidental browser file-open on drop without enabling DnD
       onDragOver={(e) => e.preventDefault()}
       onDrop={(e) => e.preventDefault()}
     >
@@ -77,4 +75,6 @@ export default function CsvUploadzone({ mode = "append", onUploaded }: Props) {
       <span className="text-slate-600">Click to upload a CSV</span>
     </div>
   );
-}
+};
+
+export default CsvUploadzone;

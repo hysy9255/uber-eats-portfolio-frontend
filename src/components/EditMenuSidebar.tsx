@@ -1,100 +1,72 @@
 import { useEffect, useState } from "react";
-import Dropdown from "./Dropdowns/Dropdown";
 import ImageUploadZone from "./UploadZones/ImageUploadZone";
-import SuccessDialog from "./SuccessPopup";
+import SuccessDialog from "./PopUps/SuccessPopup";
 import { useForm } from "react-hook-form";
 import { uploadImage } from "../utils/uploadImg";
-import type { MenuList } from "../constants/MockOrdersData";
 import { DishCategory } from "../constants/DishCategoryEnums";
 import { customInputCss } from "../constants/CustomInputCss";
+import type { EditDishForm } from "../formDataTypes/dish/editDishForm.type";
+import { useMenus } from "../ReactContext/ownerDashboardMenus/UseMenus";
+import Dropdown from "./Dropdowns/Dropdown";
 
-export type EditDishFormData = {
-  dishImgUrl: string;
-  name: string;
-  category: string;
-  price: string;
-  description: string;
-};
-
-export type EditDishPayload = EditDishFormData;
-
-interface EditMenuSidebarProps {
-  onClose: () => void; // 이름만 살짝 변경
-  menuToEdit: MenuList | null;
-  handleUpdateDish: (data: EditDishFormData) => void;
-}
-
-const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
-  onClose,
-  menuToEdit,
-  handleUpdateDish,
-}) => {
-  const [newPreview, setNewPreview] = useState<string>(
-    menuToEdit?.dishImgUrl ?? ""
+const EditMenuSidebar = () => {
+  const { setEditMenuSidebarOpen, menuToEdit, handleUpdateDish } = useMenus();
+  const [newPreview, setNewPreview] = useState<string | undefined>(
+    menuToEdit?.dishImgUrl
   );
   const [categoryOption, setCategoryOption] = useState<string>(
     menuToEdit?.category ?? "Apetizers"
   );
   const [showSuccess, setShowSuccess] = useState(false);
-
-  // 🔥 애니메이션용 로컬 상태
   const [closing, setClosing] = useState(false);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    reset,
-    formState: { errors },
-  } = useForm<EditDishFormData>({
+  const methods = useForm<EditDishForm>({
     mode: "onSubmit",
-    defaultValues: {
-      dishImgUrl: menuToEdit?.dishImgUrl ?? "",
-      name: menuToEdit?.name ?? "",
-      category: menuToEdit?.category ?? "Apetizers",
-      price: menuToEdit?.price ?? "",
-      description: menuToEdit?.description ?? "",
-    },
   });
+
+  useEffect(() => {
+    methods.reset({
+      ...menuToEdit,
+    });
+  }, [menuToEdit, methods]);
 
   const onSelectImageUpload = async (file: File) => {
     const url = URL.createObjectURL(file);
     setNewPreview(url);
     const persistentUrl = await uploadImage(file);
-    setValue("dishImgUrl", persistentUrl);
+    methods.setValue("dishImgUrl", persistentUrl);
   };
 
   useEffect(() => {
-    setValue("category", categoryOption);
-  }, [categoryOption, setValue]);
+    methods.setValue("category", categoryOption);
+  }, [categoryOption, methods]);
 
-  const updateDishSubmit = (data: EditDishFormData) => {
-    handleUpdateDish(data);
+  const updateDishSubmit = async (data: EditDishForm) => {
+    if (!menuToEdit?.dishId) {
+      return;
+    }
+    await handleUpdateDish(menuToEdit?.dishId, data);
     setShowSuccess(true);
   };
 
-  // 🔥 공통 닫기 핸들러 (슬라이드 아웃 후 언마운트)
   const handleClose = () => {
-    setClosing(true); // 클래스를 translate-x-full로 바뀌게
+    setClosing(true);
     setTimeout(() => {
-      onClose();
-    }, 300); // duration-300 과 맞추기
+      setEditMenuSidebarOpen(false);
+    }, 300);
   };
 
   return (
     <>
-      {/* Overlay */}
       <div
-        className={`fixed inset-0 z-40 bg-black/40 transition-opacity duration-500 ${
+        className={`fixed inset-0 z-400 bg-black/40 transition-opacity duration-500 ${
           closing ? "opacity-0" : "opacity-100"
         }`}
         onClick={handleClose}
       />
 
-      {/* Sidebar */}
       <section
         className={`
-          fixed top-0 right-0 z-50 h-full w-200 bg-white p-6
+          fixed top-0 right-0 z-500 h-full w-200 bg-white p-6
           transform transition-transform duration-500
           ${closing ? "translate-x-full" : "translate-x-0"}
         `}
@@ -102,15 +74,14 @@ const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
         <h1 className="text-xl font-semibold">Edit Menu</h1>
 
         <form
-          onSubmit={handleSubmit(updateDishSubmit)}
+          onSubmit={methods.handleSubmit(updateDishSubmit)}
           className="mt-4 grid grid-cols-1 items-start gap-6 md:grid-cols-6"
         >
-          {/* Left: photo */}
           <article className="md:col-span-2">
             <div className="mb-1 text-sm font-medium">Photo</div>
             <ImageUploadZone
-              className="w-full"
-              previewSrc={newPreview || undefined}
+              className="w-full aspect-square rounded-lg"
+              previewSrc={newPreview}
               onSelected={onSelectImageUpload}
             />
             <p className="mt-2 text-xs text-slate-500">
@@ -118,18 +89,19 @@ const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
             </p>
           </article>
 
-          {/* Right: inputs */}
           <article className="grid grid-cols-1 gap-4 md:col-span-4 md:grid-cols-4">
             <label className="md:col-span-4">
               <span className="text-sm font-medium">Item name</span>
               <input
-                {...register("name", { required: "Name is required" })}
+                {...methods.register("name", {
+                  required: "Name is required",
+                })}
                 className={customInputCss}
                 placeholder="Kung Pao Chicken"
               />
-              {errors?.name?.message && (
+              {methods.formState.errors?.name?.message && (
                 <span className="text-xs text-rose-600">
-                  {String(errors?.name?.message)}
+                  {String(methods.formState.errors?.name?.message)}
                 </span>
               )}
             </label>
@@ -145,14 +117,17 @@ const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
                 ]}
                 option={categoryOption}
                 setOption={setCategoryOption}
-                widthCss="w-full"
+                isEditing={true}
+                isRegular={true}
               />
             </label>
 
             <label className="md:col-span-2">
               <span className="text-sm font-medium">Price</span>
               <input
-                {...register("price", { required: "Price is required" })}
+                {...methods.register("price", {
+                  required: "Price is required",
+                })}
                 type="number"
                 inputMode="decimal"
                 step="0.01"
@@ -160,9 +135,9 @@ const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
                 className={customInputCss}
                 placeholder="12.00"
               />
-              {errors?.price?.message && (
+              {methods.formState.errors?.price?.message && (
                 <span className="text-xs text-rose-600">
-                  {String(errors?.price?.message)}
+                  {String(methods.formState.errors?.price?.message)}
                 </span>
               )}
             </label>
@@ -170,16 +145,16 @@ const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
             <label className="md:col-span-4">
               <span className="text-sm font-medium">Description</span>
               <textarea
-                {...register("description", {
+                {...methods.register("description", {
                   required: "Description is required",
                 })}
                 rows={3}
                 className={customInputCss}
                 placeholder="Spicy stir-fry with peanuts, chili and scallions."
               />
-              {errors?.description?.message && (
+              {methods.formState.errors?.description?.message && (
                 <span className="text-xs text-rose-600">
-                  {String(errors?.description?.message)}
+                  {String(methods.formState.errors?.description?.message)}
                 </span>
               )}
             </label>
@@ -209,7 +184,7 @@ const EditMenuSidebar: React.FC<EditMenuSidebarProps> = ({
         message="Menu was edited successfully. Close this dialog to see the changes."
         onConfirm={() => {
           setShowSuccess(false);
-          reset();
+          methods.reset();
           setNewPreview("");
           handleClose();
         }}

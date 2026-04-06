@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { OperatingHoursSetupContext } from "./operatingHoursSetupContext";
+import { OperatingHoursSetupContext } from "./OperatingHoursSetupContext";
 
 export const useOperatingHoursSetup = () => {
   const ctx = useContext(OperatingHoursSetupContext);

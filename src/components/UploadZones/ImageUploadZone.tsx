@@ -1,18 +1,20 @@
 import { useRef, useState } from "react";
 
-export default function ImageUploadZone({
+interface ImageUploadZoneProps {
+  label?: string;
+  accept?: string;
+  className?: string;
+  previewSrc?: string;
+  onSelected?: (file: File) => void;
+}
+
+const ImageUploadZone: React.FC<ImageUploadZoneProps> = ({
   label = "Click to upload an image",
   accept = "image/*",
   className = "w-44 md:w-60",
   previewSrc,
   onSelected,
-}: {
-  label?: string;
-  accept?: string;
-  className?: string;
-  previewSrc?: string | null;
-  onSelected?: (file: File) => void;
-}) {
+}) => {
   const inputRef = useRef<HTMLInputElement>(null);
   const [resetKey, setResetKey] = useState(0);
 
@@ -84,4 +86,6 @@ export default function ImageUploadZone({
       )}
     </div>
   );
-}
+};
+
+export default ImageUploadZone;

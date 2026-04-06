@@ -1,0 +1,112 @@
+import { Fragment, useState } from "react";
+import { ClientSideBarTabTypes } from "../../constants/ClientSideBarTabEnums";
+import LogOutIcon from "../Icons/LogOutIcon/LogOutIcon";
+import ClientSidebarTab from "./Tabs/ClientSidebarTab";
+
+enum AddOn {
+  ORDERS = "ORDERS",
+}
+
+const tabs: Partial<
+  Record<
+    ClientSideBarTabTypes | AddOn,
+    { title: string; tabType?: ClientSideBarTabTypes }
+  >
+> = {
+  [ClientSideBarTabTypes.ALL_RESTAURANTS]: {
+    title: "All Restaurants",
+    tabType: ClientSideBarTabTypes.ALL_RESTAURANTS,
+  },
+  [AddOn.ORDERS]: {
+    title: "Orders",
+  },
+  [ClientSideBarTabTypes.VIEW_PROFILE]: {
+    title: "View Profile",
+    tabType: ClientSideBarTabTypes.VIEW_PROFILE,
+  },
+  [ClientSideBarTabTypes.DELIVERY_ADDRESS]: {
+    title: "Delivery Address",
+    tabType: ClientSideBarTabTypes.DELIVERY_ADDRESS,
+  },
+};
+
+const innerTabs: Partial<
+  Record<
+    ClientSideBarTabTypes,
+    { title: string; tabType: ClientSideBarTabTypes }
+  >
+> = {
+  [ClientSideBarTabTypes.ONGOING_ORDERS]: {
+    title: "On Going",
+    tabType: ClientSideBarTabTypes.ONGOING_ORDERS,
+  },
+  [ClientSideBarTabTypes.ORDER_HISTORY]: {
+    title: "Order History",
+    tabType: ClientSideBarTabTypes.ORDER_HISTORY,
+  },
+};
+
+const ClientSideBar = () => {
+  const [selectedTab, setSelectedTab] = useState<ClientSideBarTabTypes>(
+    ClientSideBarTabTypes.ALL_RESTAURANTS
+  );
+
+  const [tabExpanded, setTabExpanded] = useState<boolean>(false);
+
+  return (
+    <div className="h-[600px] w-[300px] text-sm pt-5 flex flex-col justify-between">
+      <article>
+        {Object.keys(tabs).map((key, index) => {
+          const tab = tabs[key as ClientSideBarTabTypes | AddOn];
+
+          if (tab?.tabType) {
+            return (
+              <ClientSidebarTab
+                key={index}
+                tabType={tab?.tabType}
+                title={tab?.title}
+                selectedTab={selectedTab}
+                handleOnClick={() =>
+                  tab?.tabType && setSelectedTab(tab.tabType)
+                }
+              />
+            );
+          } else {
+            return (
+              <Fragment key={index}>
+                <ClientSidebarTab
+                  title={tab?.title}
+                  handleOnClick={() => setTabExpanded((prev) => !prev)}
+                />
+                {tabExpanded &&
+                  Object.keys(innerTabs).map((innerKey, index) => {
+                    const innerTab =
+                      innerTabs[innerKey as ClientSideBarTabTypes];
+                    return (
+                      <ClientSidebarTab
+                        key={index}
+                        extraPaddingOnLeft
+                        tabType={innerTab?.tabType}
+                        title={innerTab?.title}
+                        selectedTab={selectedTab}
+                        handleOnClick={() =>
+                          innerTab?.tabType && setSelectedTab(innerTab?.tabType)
+                        }
+                      />
+                    );
+                  })}
+              </Fragment>
+            );
+          }
+        })}
+      </article>
+
+      <article className="flex shrink-0 gap-x-2 hover:cursor-pointer rounded-md pl-3 py-2 ">
+        <LogOutIcon className="w-[20px] h-[20px]" />
+        <div className="text-gray-700">Log out</div>
+      </article>
+    </div>
+  );
+};
+
+export default ClientSideBar;

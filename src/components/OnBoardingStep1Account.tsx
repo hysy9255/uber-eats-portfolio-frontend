@@ -1,10 +1,9 @@
 import { useFormContext } from "react-hook-form";
 import { customInputCss } from "../constants/CustomInputCss";
-// import defaultProfileImg from "../images/profile/profile.png";
-import type { IOnBoardingStep1Form } from "../pages/types/OnBoardingStep1Account.type";
 import { useOnBoardingAccount } from "../ReactContext/onBoardingAccount/UseOnBoardingAccount";
 import ProfileOrLogoUploadZone from "./UploadZones/ProfileOrLogoUploadZone";
 import DefaultProfileImg from "./Images/DefaultProfileImg/DefaultProfileImg";
+import type { OnBoardingStep1Form } from "../formDataTypes/onBoarding/onBoardingStep1Form.type";
 
 const OnBoardingStep1Account = () => {
   const {
@@ -19,7 +18,7 @@ const OnBoardingStep1Account = () => {
   const {
     register,
     formState: { errors },
-  } = useFormContext<IOnBoardingStep1Form>();
+  } = useFormContext<OnBoardingStep1Form>();
 
   return (
     <form className="grid grid-cols-1 md:grid-cols-2 gap-4 ">

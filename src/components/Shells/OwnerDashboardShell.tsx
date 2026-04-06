@@ -1,21 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { getToken } from "../../auth";
-import type { Restaurant } from "../../pages/RestaurantPage";
-import ProfileHeader from "../Headers/ProfileHeader";
-import AlarmHeader from "../Headers/AlarmHeader";
-import MainHeaderV2 from "../Headers/MainHeaderV2";
 import { Outlet } from "react-router-dom";
-import OwnerDashboardSidebar from "../OwnerDashboardSidebar";
-import { getMyRestaurant } from "../../api/restaurantApi";
-import GlobalLayout from "../GlobalLayout";
+import { getMyRestaurantForOwnerDashboard } from "../../api/restaurantApi";
+import type { GetMyRestaurantForOwnerDashboardDTO } from "../../dtos/GetMyRestaurantForOwnerDashboard.dto";
 
 export type OwnerDashboardContext = {
-  restaurant: Restaurant | null;
+  restaurant: GetMyRestaurantForOwnerDashboardDTO;
   loadRestaurantData: () => Promise<void>;
 };
 
 const OwnerDashboardShell = () => {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [restaurant, setRestaurant] =
+    useState<GetMyRestaurantForOwnerDashboardDTO>();
   const token = getToken();
 
   if (!token) {
@@ -23,32 +19,23 @@ const OwnerDashboardShell = () => {
   }
 
   const loadRestaurantData = useCallback(async () => {
-    const restaurantData = await getMyRestaurant(token);
+    const restaurantData = await getMyRestaurantForOwnerDashboard(token);
     setRestaurant(restaurantData);
+    localStorage.setItem(
+      "restaurantId",
+      restaurantData.restaurantSummary.generalInfo.restaurantId
+    );
   }, [token]);
 
   useEffect(() => {
     loadRestaurantData();
-    if (restaurant?.restaurantId) {
-      localStorage.setItem("restaurantId", restaurant.restaurantId);
-    }
-  }, [loadRestaurantData, restaurant?.restaurantId]);
+  }, [loadRestaurantData]);
 
-  return (
-    <GlobalLayout>
-      <MainHeaderV2
-        profile={<ProfileHeader />}
-        alarm={<AlarmHeader />}
-        sticky={true}
-      />
-      <div className="grid grid-cols-[1fr_10fr]">
-        <OwnerDashboardSidebar />
-        <Outlet
-          context={{ restaurant, loadRestaurantData } as OwnerDashboardContext}
-        />
-      </div>
-    </GlobalLayout>
-  );
+  if (!restaurant) {
+    return <div className="p-6">Loading...</div>;
+  }
+
+  return <Outlet context={{ restaurant, loadRestaurantData }} />;
 };
 
 export default OwnerDashboardShell;

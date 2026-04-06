@@ -1,13 +1,9 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
-import type {
-  Day,
-  DayHours,
-} from "../../pages/types/OwnerOnBoardingStep3Location.type";
-import { DEFAULT_INITIAL_HOURS } from "../../constants/DefaultInitialHours";
+import { useEffect, useState, type ReactNode } from "react";
+import type { Day } from "../../pages/types/OwnerOnBoardingStep3Location.type";
 import { OperatingHoursContext } from "./OperatingHoursContext";
-import type { OwnerDashboardContext } from "../../components/Shells/OwnerDashboardShell";
-import { useOutletContext } from "react-router-dom";
 import type { TimeOption } from "../../utils/timeOptions";
+import type { OperatingHoursDTO } from "../../dtos/restaurant/OperatingHours.dto";
+import { useMyRestaurant } from "../myRestaurant/UseMyRestaurant";
 
 interface OperatingHoursProviderProps {
   children: ReactNode;
@@ -16,31 +12,13 @@ interface OperatingHoursProviderProps {
 export const OperatingHoursProvider: React.FC<OperatingHoursProviderProps> = ({
   children,
 }) => {
-  const { restaurant } = useOutletContext<OwnerDashboardContext>();
+  const { restaurant } = useMyRestaurant();
   const [activeField, setActiveField] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const initialHours = useMemo(() => {
-    if (!restaurant?.operatingHours) return DEFAULT_INITIAL_HOURS;
-
-    return restaurant.operatingHours.reduce(
-      (acc, { dayOfWeek, openTime, closeTime, open24Hours, closed }) => {
-        acc[dayOfWeek] = {
-          open: openTime,
-          close: closeTime,
-          open24: open24Hours,
-          closed,
-        };
-        return acc;
-      },
-      {} as Record<Day, DayHours>
-    );
-  }, [restaurant?.operatingHours]);
-  const [hours, setHours] = useState<Record<Day, DayHours>>(() => initialHours);
-
-  useEffect(() => {
-    setHours(initialHours);
-  }, [initialHours]);
+  const [hours, setHours] = useState<OperatingHoursDTO>(
+    () => restaurant.restaurantSummary.operatingHours
+  );
 
   useEffect(() => {
     if (!isEditing) setActiveField(null);
@@ -98,7 +76,6 @@ export const OperatingHoursProvider: React.FC<OperatingHoursProviderProps> = ({
       value={{
         hours,
         setHours,
-        initialHours,
         activeField,
         setActiveField,
         isEditing,

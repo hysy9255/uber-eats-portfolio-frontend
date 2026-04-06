@@ -7,7 +7,7 @@ type DishCardProps = {
   dishId: string;
   name: string;
   price: number;
-  dishImgUrl: string;
+  dishImgUrl?: string;
 };
 
 const DishCardForDishPage: React.FC<DishCardProps> = ({
@@ -19,13 +19,13 @@ const DishCardForDishPage: React.FC<DishCardProps> = ({
 }) => {
   const navigate = useNavigate();
   const handleOnClick = () => {
-    navigate(`/restaurants/${restaurantId}/dishes/${dishId}`);
+    navigate(`/client/restaurants/${restaurantId}/dishes/${dishId}`);
     window.location.reload();
   };
   return (
     <div
       onClick={handleOnClick}
-      className="flex-none w-[200px] hover:cursor-pointer"
+      className="flex-none w-[100px] hover:cursor-pointer"
     >
       <div className="relative">
         {dishImgUrl ? (

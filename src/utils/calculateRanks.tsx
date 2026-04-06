@@ -1,4 +1,4 @@
-import type { MenuRankingDataType } from "../constants/MockOrdersData";
+import type { MenuRankingDataType } from "../constants/MenuRankingColumns";
 
 export const calculateRanks = (data: MenuRankingDataType[]) => {
   return data

@@ -26,7 +26,7 @@ const CategoryList = () => {
       <div className="w-max mx-auto flex flex-nowrap gap-2 px-4 py-[12px]">
         {chips.map((t, i) => (
           <button
-            key={t}
+            key={i}
             type="button"
             aria-pressed={i === selected}
             onClick={() => {

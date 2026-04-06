@@ -1,17 +1,13 @@
-import type {
-  ProfileDTO,
-  UpdatePasswordForm,
-  UpdateProfileForm,
-} from "../pages/Profile";
-import type { ICreateCustomer } from "../pages/types/CustomerOnBoardingStep3Review.type";
-import type { ICreateOwner } from "../pages/types/OwnerOnBoardingStep5Review.type";
+import type { checkEmailAvailabilityQueryDTO } from "../dto/CheckEmailAvailability.query.dto";
+import type { checkEmailAvailabilityResponseDTO } from "../dto/CheckEmailAvailability.response.dto";
+import type { UpdatePasswordDTO } from "../dto/UpdatePassword.dto";
+import type { UpdateUserDTO } from "../dto/UpdateUser.dto";
+import type { UserDTO } from "../dto/User.dto";
+import { API_BASE_URL, COMMON_HEADERS } from "./baseUrl";
 
-const API_BASE_URL = "http://localhost:3002/users";
-const COMMON_HEADERS = {
-  "Content-Type": "application/json",
-};
-
-export const checkEmailAvailability = async (email: string) => {
+export const checkEmailAvailability = async ({
+  email,
+}: checkEmailAvailabilityQueryDTO): Promise<checkEmailAvailabilityResponseDTO> => {
   const res = await fetch(`${API_BASE_URL}/exists?email=${email}`, {
     method: "GET",
     headers: COMMON_HEADERS,
@@ -20,48 +16,17 @@ export const checkEmailAvailability = async (email: string) => {
   return await res.json();
 };
 
-export const loginUser = async (email: string, password: string) => {
-  const res = await fetch(`${API_BASE_URL}/login`, {
-    method: "POST",
-    headers: COMMON_HEADERS,
-    body: JSON.stringify({ email, password }),
-  });
-
-  if (!res.ok) throw new Error(await res.text());
-
-  return await res.json();
-};
-
-export const getMyProfile = async (token: string): Promise<ProfileDTO> => {
-  const res = await fetch(`${API_BASE_URL}/me`, {
+export const getMe = async (token: string): Promise<UserDTO> => {
+  const res = await fetch(`${API_BASE_URL}/users/me`, {
+    method: "GET",
     headers: { ...COMMON_HEADERS, "jwt-token": token },
   });
+
   if (!res.ok) throw new Error("unauthorized");
   return await res.json();
 };
 
-export const createOwner = async (payload: ICreateOwner) => {
-  const res = await fetch(`${API_BASE_URL}/owners`, {
-    method: "POST",
-    headers: COMMON_HEADERS,
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(await res.text());
-};
-
-export const createCustomer = async (payload: ICreateCustomer) => {
-  const res = await fetch(`${API_BASE_URL}/customers`, {
-    method: "POST",
-    headers: COMMON_HEADERS,
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(await res.text());
-};
-
-export const updateMyProfile = async (
-  token: string,
-  payload: UpdateProfileForm
-) => {
+export const updateMe = async (token: string, payload: UpdateUserDTO) => {
   const res = await fetch(`${API_BASE_URL}/me`, {
     method: "PATCH",
     headers: {
@@ -75,15 +40,16 @@ export const updateMyProfile = async (
 
 export const updatePassword = async (
   token: string,
-  payload: UpdatePasswordForm
+  payload: UpdatePasswordDTO
 ) => {
   const res = await fetch(`${API_BASE_URL}/password`, {
     method: "PATCH",
     headers: { ...COMMON_HEADERS, "jwt-token": token },
-    body: JSON.stringify({
-      password: payload.currentPassword,
-      newPassword: payload.newPassword,
-    }),
+    body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(await res.text());
+
+  if (!res.ok) {
+    const errorMsg = await res.json();
+    throw new Error(errorMsg.message);
+  }
 };

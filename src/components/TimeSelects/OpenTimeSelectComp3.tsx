@@ -4,11 +4,6 @@ import { OPEN_TIME_OPTIONS, type TimeOption } from "../../utils/timeOptions";
 import type { Day } from "../../pages/types/OwnerOnBoardingStep3Location.type";
 import { toMinutes } from "../../utils/toMinutes";
 import DownChevron from "../Icons/DownChevron";
-// import type { Day } from "../pages/types/OwnerOnBoardingStep3Location.type";
-// import { OPEN_TIME_OPTIONS, type TimeOption } from "../utils/timeOptions";
-// import { toMinutes } from "../utils/toMinutes";
-// import DownChevron from "./Icons/DownChevron";
-// import { useOperatingHoursSetup } from "../ReactContext/operatingHoursSetup/UseOperatingHoursSetup";
 
 interface OpenTimeSelectComp3Props {
   day: Day;
@@ -61,7 +56,6 @@ const OpenTimeSelectComp3: React.FC<OpenTimeSelectComp3Props> = ({
                              ? "bg-slate-100 text-slate-500"
                              : "bg-white hover:cursor-pointer hover:bg-gray-100 active:bg-gray-200"
                          }
-                         
                          `}
         onClick={() => handleClickDropdown("openTime", day)}
       >

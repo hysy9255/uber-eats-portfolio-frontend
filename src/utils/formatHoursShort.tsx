@@ -1,9 +1,10 @@
-import type { Day, DayHours } from "../pages/OwnerOnboardingStep3Location";
-
-const DAYS: Day[] = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+import {
+  DAYS,
+  type Day,
+  type DayHours,
+} from "../pages/types/OwnerOnBoardingStep3Location.type";
 
 export function formatHoursShort(hours: Record<Day, DayHours>) {
-  // 모두 같은 시간/상태면 "Daily ..." 로 축약
   const first = hours["Mon"];
   const allSame = DAYS.every((d) => {
     const h = hours[d];

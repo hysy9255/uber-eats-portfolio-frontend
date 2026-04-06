@@ -10,7 +10,7 @@ type DishCardProps = {
   name: string;
   price: number;
   descriptions: string;
-  dishImgUrl: string;
+  dishImgUrl?: string;
 };
 
 const DishCard: React.FC<DishCardProps> = ({
@@ -23,74 +23,74 @@ const DishCard: React.FC<DishCardProps> = ({
 }) => {
   const { cart } = useCart();
   const dishOnTheCart = cart.cartItems.find((item) => item.dishId === dishId);
-
+  // h-[330px] w-[230px]
   return (
-    <Link to={`/restaurants/${restaurantId}/dishes/${dishId}`}>
+    <Link
+      to={`/client/restaurants/${restaurantId}/dishes/${dishId}`}
+      className={`
+      
+      relative select-none p-3 rounded-lg border 
+      ${
+        dishOnTheCart
+          ? "bg-sky-100  border-sky-400"
+          : "border-gray-400 hover:bg-sky-100/20"
+      }
+      `}
+    >
       <div
-        className="
-        grid grid-cols-10 gap-3 
-        min-[1000px]:grid-cols-1 
-        min-[1000px]:gap-0 
-        select-none
-        "
+        className={`absolute bottom-3 right-3 
+         text-white font-bold text-[13px]
+        rounded-full w-6 h-6 
+        bg-sky-400 border border-sky-500
+        flex items-center justify-center 
+        ${dishOnTheCart ? "block" : "hidden"}
+        `}
       >
-        <div className="relative col-span-4">
-          {dishImgUrl ? (
-            <img
-              className="object-cover rounded-2xl aspect-[5/4]"
-              src={dishImgUrl}
-            />
-          ) : (
-            <div
-              className="
-              rounded-2xl aspect-[5/4]
+        {dishOnTheCart?.quantity}
+      </div>
+      <div className="relative ">
+        {dishImgUrl ? (
+          <img
+            className="object-cover rounded-lg aspect-[5/4]"
+            // className="object-cover rounded-lg w-[206px] h-[150px]"
+            src={dishImgUrl}
+          />
+        ) : (
+          <div
+            className="
+              rounded-lg 
+              aspect-[5/4]
               border border-gray-100 flex items-center justify-center"
-            >
-              {/* <img className="w-30 h-30" src={noImgAvailable} /> */}
-              <NoImgAvailable className="w-30 h-30" />
-            </div>
-          )}
-
-          <div
-            className="absolute bg-gray-50 font-bold 
-                      rounded-md text-[10px] bottom-2.5 left-2.5 px-1 py-0.5 
-                      min-[1000px]:rounded-lg min-[1000px]:text-[13px] 
-                      min-[1000px]:bottom-3 min-[1000px]:left-3 
-                      min-[1000px]:px-2 min-[1000px]:py-1"
           >
-            Popular
+            <NoImgAvailable className="w-30 h-30" />
           </div>
-          <div
-            className={`absolute top-2 right-2
-            bg-blue-400 text-white
-            rounded-full w-8 h-8 ring
-            flex items-center justify-center 
-            ${dishOnTheCart ? "block" : "hidden"}
-            `}
-          >
-            {dishOnTheCart?.quantity}
-          </div>
-        </div>
-
+        )}
         <div
-          id="desc"
-          className="flex flex-col 
-          justify-center gap-1 
-          py-2 col-span-6 
-          "
+          className="absolute bg-gray-50 font-bold 
+                      rounded-md text-[10px] bottom-2 left-2 px-2 py-1"
         >
-          <div
-            id="name"
-            className="font-bold text-lg text-nowrap overflow-hidden text-ellipsis"
-          >
-            {name}
-          </div>
-          <div id="description" className="text-slate-700 text-md ">
-            {descriptions}
-          </div>
-          <div id="price" className="text-lg">
-            ${price}
-          </div>
+          Popular
+        </div>
+      </div>
+
+      <div
+        id="desc"
+        className="flex flex-col 
+          justify-center gap-1 
+          py-2 
+          "
+      >
+        <div
+          id="name"
+          className="font-bold text-lg text-nowrap overflow-hidden text-ellipsis"
+        >
+          {name}
+        </div>
+        <div id="description" className="text-slate-700 text-md line-clamp-3">
+          {descriptions}
+        </div>
+        <div id="price" className="text-md font-medium">
+          ${price.toFixed(2)}
         </div>
       </div>
     </Link>

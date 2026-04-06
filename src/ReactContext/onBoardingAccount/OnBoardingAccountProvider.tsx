@@ -1,16 +1,15 @@
 import { useState, type ReactNode } from "react";
-
 import { OnBoardingAccountContext } from "./OnBoardingAccountContext";
 import { useNavigate } from "react-router-dom";
 import { loadDraft, saveDraft } from "../../utils/localDraft";
-import {
-  STEP1_KEY,
-  type IOnBoardingStep1Form,
-} from "../../pages/types/OnBoardingStep1Account.type";
 import { commonAccountOnBoardStep1DefaultValues } from "../../constants/DefaultValues";
 import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { uploadImage } from "../../utils/uploadImg";
 import { checkEmailAvailability } from "../../api/userApi";
+import {
+  STEP1_KEY,
+  type OnBoardingStep1Form,
+} from "../../formDataTypes/onBoarding/onBoardingStep1Form.type";
 
 interface OnBoardingAccountProviderProps {
   children: ReactNode;
@@ -43,12 +42,12 @@ export const OnBoardingAccountProvider: React.FC<
     isChecked: null,
   });
 
-  const defaultValues = loadDraft<IOnBoardingStep1Form>(
+  const defaultValues = loadDraft<OnBoardingStep1Form>(
     STEP1_KEY,
     commonAccountOnBoardStep1DefaultValues
   );
 
-  const methods = useForm<IOnBoardingStep1Form>({
+  const methods = useForm<OnBoardingStep1Form>({
     mode: "onSubmit",
     defaultValues,
   });
@@ -62,7 +61,7 @@ export const OnBoardingAccountProvider: React.FC<
     navigate("/create-account-choice");
   };
 
-  const onContinue = (data: IOnBoardingStep1Form) => {
+  const onContinue = (data: OnBoardingStep1Form) => {
     const currentEmail = data.email;
     if (emailCheck.email === null || emailCheck.email !== currentEmail) {
       setShowMessageUI({ isChecked: false, available: null });
@@ -114,7 +113,7 @@ export const OnBoardingAccountProvider: React.FC<
       setShowMessageUI({ available: false, isChecked: true });
       return;
     }
-    const res = await checkEmailAvailability(email);
+    const res = await checkEmailAvailability({ email });
     setEmailCheck({ email, available: res.available });
     setShowMessageUI({ available: res.available, isChecked: true });
   };

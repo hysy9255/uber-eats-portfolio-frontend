@@ -1,25 +1,29 @@
-import { type UserProfile } from "../pages/Profile";
 import ProfileReadOnlyInput from "./Inputs/ProfileReadOnlyInput";
-// import defaultProfileImage from "../images/profile/profile.png";
 import PencilButton from "./Buttons/IconBased/PencilButton/PencilButton";
 import { useRef } from "react";
 import { whiteBackgroundPencilIconEditStyle } from "../tailwindcss/styleConstants";
 import DefaultProfileImg from "./Images/DefaultProfileImg/DefaultProfileImg";
+import { uploadImage } from "../utils/uploadImg";
+import { useFormContext } from "react-hook-form";
+import type { UserDTO } from "../dto/User.dto";
+import type { UpdateProfileForm } from "../formDataTypes/user/updateProfileForm.type";
 
 interface ProfileAccountComponentProps {
-  userProfile?: UserProfile;
+  user?: UserDTO;
   setProfilePreview: React.Dispatch<React.SetStateAction<string | null>>;
 }
 
 const ProfileAccountComponent: React.FC<ProfileAccountComponentProps> = ({
-  userProfile,
+  user,
   setProfilePreview,
 }) => {
+  const { setValue } = useFormContext<UpdateProfileForm>();
+
   const onSelectImageUpload = async (file: File) => {
     const url = URL.createObjectURL(file);
     setProfilePreview(url);
-    // const persistentUrl = await uploadImage(file);
-    // setValue("dishImgUrl", persistentUrl);
+    const persistentUrl = await uploadImage(file);
+    setValue("profileImgUrl", persistentUrl);
   };
 
   const inputRef = useRef<HTMLInputElement>(null);
@@ -50,10 +54,10 @@ const ProfileAccountComponent: React.FC<ProfileAccountComponentProps> = ({
               className="hidden"
               onChange={(e) => handleFile(e.target.files?.[0] ?? undefined)}
             />
-            {userProfile?.profileImgUrl ? (
+            {user?.profileImgUrl ? (
               <img
                 id="profile-img"
-                src={userProfile.profileImgUrl}
+                src={user.profileImgUrl}
                 className="w-20 h-20 border-2 border-black/20 rounded-full object-cover"
                 alt="Profile"
               />
@@ -71,11 +75,11 @@ const ProfileAccountComponent: React.FC<ProfileAccountComponentProps> = ({
         </div>
 
         <div className="self-center text-xs">Name</div>
-        <ProfileReadOnlyInput value={userProfile?.name} />
+        <ProfileReadOnlyInput value={user?.name} />
         <div className="self-center text-xs">Email</div>
-        <ProfileReadOnlyInput value={userProfile?.email} />
+        <ProfileReadOnlyInput value={user?.email} />
         <div className="self-center text-xs">Role</div>
-        <ProfileReadOnlyInput value={userProfile?.role} />
+        <ProfileReadOnlyInput value={user?.role} />
       </div>
     </article>
   );

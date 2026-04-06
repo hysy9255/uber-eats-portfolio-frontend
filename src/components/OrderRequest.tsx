@@ -1,13 +1,13 @@
 import { useFormContext } from "react-hook-form";
-import type { ICreateOrderForm } from "../pages/CartPage";
+import type { CreateOrderForm } from "../formDataTypes/order/createOrderForm.type";
 
 const OrderRequest = () => {
-  const { register } = useFormContext<ICreateOrderForm>();
+  const { register } = useFormContext<CreateOrderForm>();
   return (
     <div>
       <div>ORDER REQUEST</div>
       <div>
-        <div className="font-normal">To restaurant</div>
+        <div className="font-normal italic">To restaurant</div>
         <textarea
           {...register("requestToRestaurant")}
           placeholder="Leave a note..."
@@ -19,7 +19,7 @@ const OrderRequest = () => {
         />
       </div>
       <div>
-        <div className="font-normal">To driver</div>
+        <div className="font-normal italic">To driver</div>
         <textarea
           {...register("requestToDriver")}
           placeholder="Leave a note..."
