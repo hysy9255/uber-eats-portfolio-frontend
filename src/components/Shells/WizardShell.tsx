@@ -109,7 +109,7 @@ export default function WizardShell({
       {showConfirm && (
         <LeaveThisStepPopup
           setShowConfirm={setShowConfirm}
-          onExitWithoutSaving={onExitWithoutSaving}
+          onExit={onExitWithoutSaving}
         />
       )}
     </Fragment>

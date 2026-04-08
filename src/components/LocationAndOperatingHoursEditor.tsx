@@ -6,7 +6,7 @@ import CancelButton from "./Buttons/CancelButton";
 import EditButton from "./Buttons/EditButton";
 import { updateRestaurant } from "../api/restaurantApi";
 import { getToken } from "../auth";
-import RestaurantLocationInput from "./Inputs/RestaurantLocationInput";
+// import RestaurantLocationInput from "./Inputs/RestaurantLocationInput";
 import { useOperatingHours } from "../ReactContext/operatingHours/UseOperatingHours";
 import OperatingHoursEditRow from "./Rows/OperatingHoursEditRow";
 import SubmitButton from "./Buttons/SubmitButton/SubmitButton";

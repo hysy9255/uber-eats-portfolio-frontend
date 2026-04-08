@@ -11,8 +11,8 @@ const OperatingHoursComp: React.FC<OperatingHoursCompProps> = ({
   operatingHours,
 }) => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [openTime, setOpenTime] = useState<string>();
-  const [closeTime, setCloseTime] = useState<string>();
+  const [openTime, setOpenTime] = useState<string | null>();
+  const [closeTime, setCloseTime] = useState<string | null>();
   const [popUpOpen, setPopUpOpen] = useState<boolean>(false);
 
   useEffect(() => {

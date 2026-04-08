@@ -1,4 +1,4 @@
-import RestaurantInfoInput from "./components/Inputs/RestaurantInfoInput";
+// import RestaurantInfoInput from "./components/Inputs/RestaurantInfoInput";
 import LogoUpload from "./components/LogoUpload";
 
 const LogoPractice = () => {

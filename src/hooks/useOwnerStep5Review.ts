@@ -108,7 +108,13 @@ export const useOwnerStep5Review = () => {
             Sun: data.step3.hours.Sun,
           },
         },
-        dishes: data.step4.items,
+        dishes: data.step4.items.map((item) => ({
+          name: item.name,
+          price: parseFloat(item.price),
+          category: item.category,
+          description: item.description,
+          dishImgUrl: item.imagePreview,
+        })),
       },
     });
   };

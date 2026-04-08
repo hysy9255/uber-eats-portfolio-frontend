@@ -1,5 +1,5 @@
 import { useState, type ReactNode } from "react";
-import { GeneralSideBarContext } from "./GeneralSidebarContext";
+import { GeneralSideBarContext } from "./GeneralSideBarContext";
 
 interface GeneralSideBarProviderProps {
   children: ReactNode;

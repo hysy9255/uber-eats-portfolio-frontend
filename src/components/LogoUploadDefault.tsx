@@ -1,5 +1,4 @@
 import { useRef, useState } from "react";
-import { uploadImage } from "../utils/uploadImg";
 import CameraIcon from "./Icons/CameraIcon/CameraIcon";
 
 const LogoUpload = () => {
@@ -19,7 +18,7 @@ const LogoUpload = () => {
     }
     const url = URL.createObjectURL(file);
     setPreview(url);
-    const uploadedUrl = await uploadImage(file);
+    // const uploadedUrl = await uploadImage(file);
     e.target.value = "";
   };
 

@@ -1,6 +1,6 @@
 import React from "react";
-import { useFormContext } from "react-hook-form";
-import type { IDriverOnBoardingStep2Form } from "../pages/DriverOnboardingStep2Vehicle";
+// import { useFormContext } from "react-hook-form";
+// import type { IDriverOnBoardingStep2Form } from "../pages/DriverOnboardingStep2Vehicle";
 
 interface VehicleTypeSelectorProps {
   vehicleType: string;
@@ -11,15 +11,13 @@ const VehicleTypeSelector: React.FC<VehicleTypeSelectorProps> = ({
   vehicleType,
   setVehicleType,
 }) => {
-  const { register, setValue } = useFormContext<IDriverOnBoardingStep2Form>();
-
   const handleOnClick = (type: string) => {
     setVehicleType(type);
-    setValue("vehicleType", type);
+    // setValue("vehicleType", type);
   };
   return (
     <div className="mt-2 inline-flex rounded-full ring-1 ring-slate-300 bg-white p-1 text-sm">
-      <input {...register("vehicleType")} className="hidden"></input>
+      <input className="hidden"></input>
       <button
         type="button"
         // onClick={() => setVehicleType("car")}

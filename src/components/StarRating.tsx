@@ -1,4 +1,5 @@
 import React from "react";
+import { v4 as uuidv4 } from "uuid";
 
 type StarRatingProps = {
   rating: number;
@@ -71,6 +72,7 @@ const StarRating: React.FC<StarRatingProps> = ({
   showText = false,
 }) => {
   const safeRating = Math.max(0, Math.min(rating, max));
+  const id = uuidv4();
 
   return (
     <div className={`inline-flex items-center gap-2 ${className}`}>
@@ -85,7 +87,7 @@ const StarRating: React.FC<StarRatingProps> = ({
           return (
             <SingleStar
               key={index}
-              id={`star-fill-${index}-${safeRating}-${crypto.randomUUID()}`}
+              id={`star-fill-${index}-${safeRating}-${id}`}
               fillPercent={fillPercent}
               size={size}
               fillColor={fillColor}
