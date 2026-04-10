@@ -7,6 +7,7 @@ import { API_BASE_URL } from "./api/baseUrl";
 // });
 
 export const socket = io(`${API_BASE_URL}`, {
-  autoConnect: false,
-  transports: ["websocket"],
+  withCredentials: true,
+  // autoConnect: false,
+  // transports: ["websocket"],
 });
