@@ -63,7 +63,7 @@ export default function Login() {
                         p-5 flex flex-col `}
         >
           <h1 className="text-xl font-extrabold tracking-tight">
-            Welcome back 5
+            Welcome back 10
           </h1>
           <p className="mt-2 text-sm text-slate-600">Sign in to continue</p>
 
