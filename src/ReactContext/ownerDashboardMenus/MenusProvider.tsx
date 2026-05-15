@@ -11,7 +11,7 @@ import type { DishDTO } from "../../dtos/Dish.dto";
 import type { EditDishForm } from "../../formDataTypes/dish/editDishForm.type";
 import type { CreateDishDTO } from "../../dtos/dish/CreateDish.dto";
 import type { CreateDishForm } from "../../formDataTypes/dish/createDishForm.type";
-import type { UpdateDishDTO } from "../../dtos/dish/UpdateDishRequest.dto";
+import { UpdateDishDTO } from "../../dtos/dish/UpdateDishRequest.dto";
 import { filterMenussByCategory } from "../../utils/filterMenusByCategory";
 import { DishCategory } from "../../constants/DishCategoryEnums";
 
@@ -26,8 +26,7 @@ export const MenusProvider: React.FC<MenusProviderProps> = ({ children }) => {
   }
   const restaurantId = getRestaurantId();
 
-  const [menuList, setMenuList] = useState<DishDTO[]>([]);
-  const [menuList2, setMenuList2] = useState<Record<DishCategory, DishDTO[]>>();
+  const [menuList, setMenuList] = useState<Record<DishCategory, DishDTO[]>>();
   const [menuToEdit, setMenuToEdit] = useState<DishDTO>();
   const [menuToDelete, setMenuToDelete] = useState<DishDTO | null>(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState<boolean>(false);
@@ -36,33 +35,28 @@ export const MenusProvider: React.FC<MenusProviderProps> = ({ children }) => {
     useState<boolean>(false);
 
   const loadMenus = useCallback(async () => {
-    const menus = await getDishes(restaurantId, token);
-    setMenuList(menus);
-    setMenuList2(() => filterMenussByCategory(menus));
-  }, [restaurantId, token]);
+    const menus = await getDishes(restaurantId);
+    setMenuList(() => filterMenussByCategory(menus));
+  }, [restaurantId]);
 
   const handleCreateDish = async (data: CreateDishForm) => {
     const payload: CreateDishDTO = {
       ...data,
-      price: data.price ?? 0,
+      price: Number(data.price),
     };
     await createDish(token, payload);
-    await loadMenus();
   };
 
   const handleUpdateDish = async (dishId: string, data: EditDishForm) => {
-    const payload: UpdateDishDTO = {
+    const payload: UpdateDishDTO = new UpdateDishDTO({
       ...data,
-    };
+      price: Number(data.price),
+    });
     await updateDish(dishId, token, payload);
-    await loadMenus();
   };
 
   const handleDeleteDish = async (dishId: string) => {
     await deleteDish(dishId, token);
-    setMenuList((prev) => prev.filter((item) => item.dishId !== dishId));
-    setShowConfirmDelete(false);
-    setMenuToDelete(null);
   };
 
   const handleClickEditButton = (menu: DishDTO) => {
@@ -85,10 +79,10 @@ export const MenusProvider: React.FC<MenusProviderProps> = ({ children }) => {
         handleClickEditButton,
         handleClickDeleteButton,
         menuList,
-        menuList2,
         showConfirmDelete,
         editMenuSidebarOpen,
         menuToEdit,
+        setMenuToDelete,
         menuToDelete,
         setShowConfirmDelete,
         addMenuSidebarOpen,

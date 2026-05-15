@@ -6,9 +6,11 @@ import { getRestaurantPageView } from "../api/restaurantApi";
 import CategoryButton from "../components/Buttons/CategoryButton";
 import DefaultRestaurantLogoImg from "../components/Images/DefaultRestaurantLogoImg/DefaultRestaurantLogoImg";
 import StarIcon from "../components/Icons/StarIcon/StarIcon";
-import type { GetRestaurantPageViewDTO } from "../dtos/GetRestaurantPageView.dto";
 import { extractUniqueCategories } from "../utils/extractUniqueCategories";
 import { useGeneralSideBar } from "../ReactContext/GeneralSideBar/UseGeneralSideBar";
+import type { GetRestaurantViewDTO } from "../dtos/RestaurantView.dto";
+import { getDishes } from "../api/dishApi";
+import type { DishDTO } from "../dtos/Dish.dto";
 
 const RestaurantPage = () => {
   const { restaurantId } = useParams();
@@ -18,17 +20,19 @@ const RestaurantPage = () => {
     throw new Error("Error");
   }
 
-  const [RestaurantPageView, setRestaurant] =
-    useState<GetRestaurantPageViewDTO>();
-
+  const [RestaurantPageView, setRestaurant] = useState<GetRestaurantViewDTO>();
+  const [menuList, setMenuList] = useState<DishDTO[]>([]);
   const [categories, setCategories] = useState<string[]>([]);
 
   const loadRestaurantViewData = useCallback(async () => {
     const restaurantViewData = await getRestaurantPageView(restaurantId);
     setRestaurant(restaurantViewData);
 
+    const menus = await getDishes(restaurantId);
+    setMenuList(menus);
+
     const uniqueCategories = extractUniqueCategories(
-      restaurantViewData.dishes.map((dish) => dish.category)
+      menus.map((dish) => dish.category)
     );
 
     setCategories(uniqueCategories);
@@ -44,7 +48,7 @@ const RestaurantPage = () => {
         id="banner"
         className="aspect-[7/1] bg-cover bg-center rounded-2xl mx-auto"
         style={{
-          backgroundImage: `url(${RestaurantPageView?.restaurantSummary.generalInfo.bannerImgUrl})`,
+          backgroundImage: `url(${RestaurantPageView?.generalInfo.bannerImgUrl})`,
         }}
       ></div>
 
@@ -54,17 +58,17 @@ const RestaurantPage = () => {
           className="             
             py-3 flex space-x-4"
         >
-          {RestaurantPageView?.restaurantSummary.generalInfo.logo ? (
+          {RestaurantPageView?.generalInfo.logo ? (
             <img
               className="rounded-full object-cover w-20 h-20 border-1 border-gray-300"
-              src={RestaurantPageView.restaurantSummary.generalInfo.logo}
+              src={RestaurantPageView.generalInfo.logo}
             />
           ) : (
             <DefaultRestaurantLogoImg className="rounded-full object-cover w-20 h-20 border-1 border-gray-300" />
           )}
           <div className="flex flex-col items-start justify-center">
             <div className="text-nowrap font-bold text-lg">
-              {RestaurantPageView?.restaurantSummary.generalInfo.dba}
+              {RestaurantPageView?.generalInfo.dba}
             </div>
 
             <div className="flex gap-x-2 text-sm flex-col min-[1000px]:flex-row">
@@ -72,22 +76,18 @@ const RestaurantPage = () => {
                 <StarIcon className="w-[15px] h-[15px]" />
 
                 <div className="">
-                  4.9 (808) •{" "}
-                  {RestaurantPageView?.restaurantSummary.generalInfo.orderType}{" "}
-                  • {RestaurantPageView?.restaurantSummary.generalInfo.prepTime}{" "}
-                  min
+                  4.9 (808) • {RestaurantPageView?.generalInfo.orderType} •{" "}
+                  {RestaurantPageView?.generalInfo.prepTime} min
                 </div>
               </div>
               <div className="text-slate-700">
-                ({RestaurantPageView?.restaurantSummary.address.streetAddress},{" "}
-                {RestaurantPageView?.restaurantSummary.address.city},{" "}
-                {RestaurantPageView?.restaurantSummary.address.zip})
+                ({RestaurantPageView?.address.streetAddress},{" "}
+                {RestaurantPageView?.address.city},{" "}
+                {RestaurantPageView?.address.zip})
               </div>
             </div>
             <OperatingHoursComp
-              operatingHours={
-                RestaurantPageView?.restaurantSummary.operatingHours
-              }
+              operatingHours={RestaurantPageView?.operatingHours}
             />
           </div>
         </div>
@@ -111,7 +111,7 @@ const RestaurantPage = () => {
                     : "grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
                 } `}
               >
-                {RestaurantPageView?.dishes
+                {menuList
                   .filter((dish) => dish.category === category)
                   .map((dish) => (
                     <DishCard

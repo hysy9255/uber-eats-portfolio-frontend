@@ -4,11 +4,13 @@ import EditButton from "./Buttons/EditButton";
 import SubmitButton from "./Buttons/SubmitButton/SubmitButton";
 import RestaurantLocationInput from "./Inputs/RestaurantLocationInput";
 import TitleComp from "./TitleComp";
-import type { EditLocationAndOperatingHoursForm } from "../formDataTypes/restaurant/editLocationAndHoursForm.type";
 import { FormProvider, useForm } from "react-hook-form";
 import { useMyRestaurant } from "../ReactContext/myRestaurant/UseMyRestaurant";
 import { getToken } from "../auth";
 import { updateRestaurant } from "../api/restaurantApi";
+import { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
+import { UpdateRestaurantAddressDTO } from "../dtos/restaurant/UpdateRestaurantAddress.dto";
+import type { EditLocationForm } from "../formDataTypes/restaurant/editLocationForm.type";
 
 interface RestaurantLocationProps {
   className?: string;
@@ -23,7 +25,7 @@ const RestaurantLocation: React.FC<RestaurantLocationProps> = ({
   const token = getToken();
   if (!token) throw new Error("No Token");
 
-  const methods = useForm<EditLocationAndOperatingHoursForm>({
+  const methods = useForm<EditLocationForm>({
     mode: "onSubmit",
   });
 
@@ -34,25 +36,22 @@ const RestaurantLocation: React.FC<RestaurantLocationProps> = ({
   const onClickCancelEdit = () => {
     setIsEditing(false);
     methods.reset({
-      address: {
-        ...restaurant?.restaurantSummary.address,
-      },
+      ...restaurant?.address,
     });
   };
 
-  const onSubmit = async (data: EditLocationAndOperatingHoursForm) => {
-    await updateRestaurant(token, {
-      ...data,
+  const onSubmit = async (data: EditLocationForm) => {
+    const payload: UpdateRestaurantDTO = new UpdateRestaurantDTO({
+      address: new UpdateRestaurantAddressDTO({ ...data }),
     });
+    await updateRestaurant(token, payload);
     await loadRestaurantData();
     setIsEditing(false);
   };
 
   useEffect(() => {
     methods.reset({
-      address: {
-        ...restaurant?.restaurantSummary.address,
-      },
+      ...restaurant?.address,
     });
   }, [restaurant, methods]);
 
@@ -82,31 +81,31 @@ const RestaurantLocation: React.FC<RestaurantLocationProps> = ({
         <div className="grid grid-cols-3 gap-2">
           <RestaurantLocationInput
             title="Street address"
-            fieldName="address.streetAddress"
+            fieldName="streetAddress"
             className="col-span-2"
             isEditing={isEditing}
           />
           <RestaurantLocationInput
             title="Unit"
-            fieldName="address.unit"
+            fieldName="unit"
             className="col-span-1"
             isEditing={isEditing}
           />
           <RestaurantLocationInput
             title="State"
-            fieldName="address.state"
+            fieldName="state"
             className="col-span-1"
             isEditing={isEditing}
           />
           <RestaurantLocationInput
             title="City"
-            fieldName="address.city"
+            fieldName="city"
             className="col-span-1"
             isEditing={isEditing}
           />
           <RestaurantLocationInput
             title="Zip"
-            fieldName="address.zip"
+            fieldName="zip"
             className="col-span-1"
             isEditing={isEditing}
           />

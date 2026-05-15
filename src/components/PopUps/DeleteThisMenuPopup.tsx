@@ -1,8 +1,24 @@
 import { useMenus } from "../../ReactContext/ownerDashboardMenus/UseMenus";
 
 const DeleteThisMenuPopup = () => {
-  const { menuToDelete, setShowConfirmDelete, handleDeleteDish } = useMenus();
+  const {
+    setMenuToDelete,
+    menuToDelete,
+    setShowConfirmDelete,
+    handleDeleteDish,
+  } = useMenus();
   if (!menuToDelete) return;
+
+  const deleteDishSubmit = async (dishId: string) => {
+    try {
+      await handleDeleteDish(dishId);
+      setShowConfirmDelete(false);
+      setMenuToDelete(null);
+    } catch (e) {
+      console.error(e);
+      alert("Server Error: Please try again");
+    }
+  };
   return (
     <div
       className="fixed inset-0 z-400 flex items-center justify-center"
@@ -24,15 +40,15 @@ const DeleteThisMenuPopup = () => {
           <button
             type="button"
             onClick={() => setShowConfirmDelete(false)}
-            className="rounded-full px-4 py-2 text-sm font-medium ring-1 ring-slate-300 hover:bg-slate-50"
+            className="rounded-full px-4 py-2 text-sm font-medium ring-1 ring-slate-300 hover:bg-slate-50 cursor-pointer"
           >
             Cancel
           </button>
 
           <button
             type="button"
-            onClick={() => handleDeleteDish(menuToDelete.dishId)}
-            className="rounded-full px-4 py-2 text-sm font-medium text-red-600 ring-1 ring-red-200 hover:bg-red-50"
+            onClick={() => deleteDishSubmit(menuToDelete.dishId)}
+            className="rounded-full px-4 py-2 text-sm font-medium text-red-600 ring-1 ring-red-200 hover:bg-red-50 cursor-pointer"
           >
             Delete
           </button>

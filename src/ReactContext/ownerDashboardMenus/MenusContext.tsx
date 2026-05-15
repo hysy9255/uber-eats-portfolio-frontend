@@ -8,15 +8,14 @@ type MenusContextValue = {
   loadMenus: () => Promise<void>;
   handleCreateDish: (data: CreateDishForm) => Promise<void>;
   handleUpdateDish: (dishId: string, data: EditDishForm) => Promise<void>;
-  // handleDeleteDish: () => Promise<void>;
   handleDeleteDish: (dishId: string) => Promise<void>;
   handleClickEditButton: (menu: DishDTO) => void;
   handleClickDeleteButton: (menu: DishDTO) => void;
-  menuList: DishDTO[];
-  menuList2?: Record<DishCategory, DishDTO[]>;
+  menuList?: Record<DishCategory, DishDTO[]>;
   showConfirmDelete: boolean;
   editMenuSidebarOpen: boolean;
   menuToEdit?: DishDTO;
+  setMenuToDelete: (value: DishDTO | null) => void;
   menuToDelete: DishDTO | null;
   setShowConfirmDelete: (value: boolean) => void;
   addMenuSidebarOpen: boolean;

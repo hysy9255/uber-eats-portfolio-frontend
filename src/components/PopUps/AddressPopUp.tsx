@@ -21,7 +21,7 @@ const AddressPopUp: React.FC<AddressPopUpProps> = ({ closeAddressPopUp }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex items-center justify-center"
+      className="fixed inset-0 z-[300] flex items-center justify-center"
       aria-modal="true"
       role="dialog"
     >

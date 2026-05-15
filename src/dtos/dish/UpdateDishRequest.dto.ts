@@ -1,3 +1,21 @@
-import type { CreateDishDTO } from "./CreateDish.dto";
+export class UpdateDishDTO {
+  name?: string;
+  price?: number;
+  category?: string;
+  description?: string;
+  dishImgUrl?: string;
 
-export type UpdateDishDTO = Partial<CreateDishDTO>;
+  constructor(init: {
+    name?: string;
+    price?: number;
+    category?: string;
+    description?: string;
+    dishImgUrl?: string;
+  }) {
+    this.name = init.name;
+    this.price = init.price;
+    this.category = init.category;
+    this.description = init.description;
+    this.dishImgUrl = init.dishImgUrl;
+  }
+}

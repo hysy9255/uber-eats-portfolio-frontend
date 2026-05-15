@@ -12,6 +12,7 @@ import type { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dt
 import { getToken } from "../auth";
 import { updateRestaurant } from "../api/restaurantApi";
 import { useMyRestaurant } from "../ReactContext/myRestaurant/UseMyRestaurant";
+import { UpdateRestaurantGeneralInfoDTO } from "../dtos/restaurant/UpdateRestaurantGeneralInfo.dto";
 
 interface RestaurantOperationProps {
   className?: string;
@@ -38,7 +39,9 @@ const RestaurantOperation: React.FC<RestaurantOperationProps> = ({
   };
 
   const onSubmit = async (data: EditRestaurantInfoForm) => {
-    const payload: UpdateRestaurantDTO = { generalInfo: { ...data } };
+    const payload: UpdateRestaurantDTO = {
+      generalInfo: new UpdateRestaurantGeneralInfoDTO({ ...data }),
+    };
     await updateRestaurant(token, payload);
     await loadRestaurantData();
     setIsEditing(false);

@@ -10,7 +10,7 @@ import type { CreateDishForm } from "../../formDataTypes/dish/createDishForm.typ
 import Dropdown from "../Dropdowns/Dropdown";
 
 const AddMenuSidebar = () => {
-  const { setAddMenuSidebarOpen, handleCreateDish } = useMenus();
+  const { setAddMenuSidebarOpen, handleCreateDish, loadMenus } = useMenus();
   const [newPreview, setNewPreview] = useState<string>();
   const [showSuccess, setShowSuccess] = useState<boolean>(false);
   const [categoryOption, setCategoryOption] = useState<string>("Appetizers");
@@ -30,9 +30,15 @@ const AddMenuSidebar = () => {
     methods.setValue("dishImgUrl", persistentUrl);
   };
 
-  const createDishSubmit = (data: CreateDishForm) => {
-    handleCreateDish(data);
-    setShowSuccess(true);
+  const createDishSubmit = async (data: CreateDishForm) => {
+    try {
+      await handleCreateDish(data);
+      await loadMenus();
+      setShowSuccess(true);
+    } catch (e) {
+      alert("Server Error: Please try again");
+      console.error(e);
+    }
   };
 
   const [closing, setClosing] = useState(false);
@@ -167,7 +173,7 @@ const AddMenuSidebar = () => {
       <SuccessDialog
         open={showSuccess}
         title="Menu Created"
-        message="New menu was created successfully. Continue to add more or close this dialog."
+        message="New menu was created successfully."
         onConfirm={() => {
           setShowSuccess(false);
           methods.reset();

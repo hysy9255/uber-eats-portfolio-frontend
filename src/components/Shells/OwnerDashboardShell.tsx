@@ -2,16 +2,15 @@ import { useCallback, useEffect, useState } from "react";
 import { getToken } from "../../auth";
 import { Outlet } from "react-router-dom";
 import { getMyRestaurantForOwnerDashboard } from "../../api/restaurantApi";
-import type { GetMyRestaurantForOwnerDashboardDTO } from "../../dtos/GetMyRestaurantForOwnerDashboard.dto";
+import type { RestaurantViewDTO } from "../../dtos/RestaurantView.dto";
 
 export type OwnerDashboardContext = {
-  restaurant: GetMyRestaurantForOwnerDashboardDTO;
+  restaurant: RestaurantViewDTO;
   loadRestaurantData: () => Promise<void>;
 };
 
 const OwnerDashboardShell = () => {
-  const [restaurant, setRestaurant] =
-    useState<GetMyRestaurantForOwnerDashboardDTO>();
+  const [restaurant, setRestaurant] = useState<RestaurantViewDTO>();
   const token = getToken();
 
   if (!token) {
@@ -23,7 +22,7 @@ const OwnerDashboardShell = () => {
     setRestaurant(restaurantData);
     localStorage.setItem(
       "restaurantId",
-      restaurantData.restaurantSummary.generalInfo.restaurantId
+      restaurantData.generalInfo.restaurantId
     );
   }, [token]);
 

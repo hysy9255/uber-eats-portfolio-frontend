@@ -1,7 +1,7 @@
 export type CreateDishForm = {
   name: string;
   category: string;
-  price: number | null;
+  price: number;
   description: string;
   dishImgUrl?: string;
 };

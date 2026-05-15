@@ -1,24 +1,23 @@
 import type { GetRestaurantNameAndLogoDTO } from "../dtos/GetRestaurantName.dto";
-import type { GetRestaurantPageViewDTO } from "../dtos/GetRestaurantPageView.dto";
-import type { GetRestaurantsPageViewDTO } from "../dtos/GetRestaurantsPageView.dto";
-import type { GetMyRestaurantForOwnerDashboardDTO } from "../dtos/GetMyRestaurantForOwnerDashboard.dto";
+import type { RestaurantViewDTO } from "../dtos/RestaurantView.dto";
 import type { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
 import { API_BASE_URL, COMMON_HEADERS } from "./baseUrl";
 
-export const getRestaurantsPageView =
-  async (): Promise<GetRestaurantsPageViewDTO> => {
-    const res = await fetch(`${API_BASE_URL}/restaurants`, {
-      method: "GET",
-      headers: COMMON_HEADERS,
-    });
+export const getRestaurantsPageView = async (): Promise<
+  RestaurantViewDTO[]
+> => {
+  const res = await fetch(`${API_BASE_URL}/restaurants`, {
+    method: "GET",
+    headers: COMMON_HEADERS,
+  });
 
-    if (!res.ok) throw new Error(await res.text());
-    return await res.json();
-  };
+  if (!res.ok) throw new Error(await res.text());
+  return await res.json();
+};
 
 export const getRestaurantPageView = async (
   restaurantId: string
-): Promise<GetRestaurantPageViewDTO> => {
+): Promise<RestaurantViewDTO> => {
   const res = await fetch(`${API_BASE_URL}/restaurants/${restaurantId}/view`, {
     method: "GET",
     headers: COMMON_HEADERS,
@@ -30,7 +29,7 @@ export const getRestaurantPageView = async (
 
 export const getMyRestaurantForOwnerDashboard = async (
   token: string
-): Promise<GetMyRestaurantForOwnerDashboardDTO> => {
+): Promise<RestaurantViewDTO> => {
   const res = await fetch(`${API_BASE_URL}/restaurants/my-restaurant`, {
     method: "GET",
     headers: {
@@ -60,7 +59,6 @@ export const updateRestaurant = async (
   token: string,
   payload: UpdateRestaurantDTO
 ) => {
-  console.log("payload", payload);
   const res = await fetch(`${API_BASE_URL}/restaurants`, {
     method: "PATCH",
     headers: {

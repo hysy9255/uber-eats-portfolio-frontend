@@ -68,7 +68,7 @@ const OrderTracker: React.FC<OrderTrackerProps> = ({ order }) => {
     return () => {
       socket.off("order.statusChanged", onOrderStatusChanged);
     };
-  }, [order?.orderInfo.orderId]);
+  }, [order, order?.orderInfo.orderId]);
 
   useEffect(() => {
     if (!order) return;

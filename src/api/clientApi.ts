@@ -21,53 +21,88 @@ export const setDefaultAddress = async (
   token: string,
   payload: SetDefaultDeliveryAddressDTO
 ) => {
-  const res = await fetch(`${API_BASE_URL}/client/address/default`, {
-    method: "PATCH",
-    headers: { ...COMMON_HEADERS, "jwt-token": token },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/client/address/default`, {
+      method: "PATCH",
+      headers: { ...COMMON_HEADERS, "jwt-token": token },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => null);
 
-  if (!res.ok) throw new Error("unauthorized");
+    if (!res.ok) {
+      console.log("message:", data.message);
+      throw new Error(data.error);
+    }
+
+    alert("배송지가 변경되었습니다");
+  } catch (e) {
+    alert(e);
+  }
 };
 
 export const updateDeliveryAddress = async (
   token: string,
   payload: UpdateDeliveryAddressDTO
 ) => {
-  const res = await fetch(`${API_BASE_URL}/client/address`, {
-    method: "PATCH",
-    headers: { ...COMMON_HEADERS, "jwt-token": token },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/client/address`, {
+      method: "PATCH",
+      headers: { ...COMMON_HEADERS, "jwt-token": token },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => null);
 
-  if (!res.ok) throw new Error("unauthorized");
+    if (!res.ok) {
+      console.log("message:", data.message);
+      throw new Error(data.error);
+    }
+
+    alert("주소가 변경되었습니다");
+  } catch (e) {
+    alert(e);
+  }
 };
 
 export const addDeliveryAddress = async (
   token: string,
   payload: CreateDeliveryAddressDTO
 ) => {
-  const res = await fetch(`${API_BASE_URL}/client/address`, {
-    method: "POST",
-    headers: { ...COMMON_HEADERS, "jwt-token": token },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/client/address`, {
+      method: "POST",
+      headers: { ...COMMON_HEADERS, "jwt-token": token },
+      body: JSON.stringify(payload),
+    });
+    const data = await res.json().catch(() => null);
 
-  if (!res.ok) throw new Error("unauthorized");
+    if (!res.ok) {
+      console.log("message:", data.message);
+      throw new Error(data.error);
+    }
+    alert("주소가 등록되었습니다");
+  } catch (e) {
+    alert(e);
+  }
 };
 
 export const deleteDeliveryAddress = async (
   token: string,
   payload: DeleteDeliveryAddressDTO
 ) => {
-  const res = await fetch(`${API_BASE_URL}/client/address`, {
-    method: "DELETE",
-    headers: { ...COMMON_HEADERS, "jwt-token": token },
-    body: JSON.stringify(payload),
-  });
+  try {
+    const res = await fetch(`${API_BASE_URL}/client/address`, {
+      method: "DELETE",
+      headers: { ...COMMON_HEADERS, "jwt-token": token },
+      body: JSON.stringify(payload),
+    });
 
-  if (!res.ok) {
-    const error = await res.json();
-    throw new Error(error.message);
+    if (!res.ok) {
+      const error = await res.json();
+      throw new Error(error.message);
+    }
+
+    alert("주소가 삭제되었습니다");
+  } catch (e) {
+    alert(e);
   }
 };

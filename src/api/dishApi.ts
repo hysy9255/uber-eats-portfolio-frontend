@@ -4,17 +4,13 @@ import type { UpdateDishDTO } from "../dtos/dish/UpdateDishRequest.dto";
 import type { CreateDishDTO } from "../dtos/dish/CreateDish.dto";
 import { API_BASE_URL, COMMON_HEADERS } from "./baseUrl";
 
-export const getDishes = async (
-  restaurantId: string,
-  token: string
-): Promise<DishDTO[]> => {
+export const getDishes = async (restaurantId: string): Promise<DishDTO[]> => {
   const res = await fetch(
     `${API_BASE_URL}/restaurants/${restaurantId}/dishes`,
     {
       method: "GET",
       headers: {
         ...COMMON_HEADERS,
-        "jwt-token": token,
       },
     }
   );

@@ -7,9 +7,10 @@ import { useState } from "react";
 import { getToken } from "../auth";
 import { useFormContext } from "react-hook-form";
 import type { EditRestaurantInfoForm } from "../formDataTypes/restaurant/editRestaurantInfoForm.type";
-import type { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
+import { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
 import { updateRestaurant } from "../api/restaurantApi";
 import { useMyRestaurant } from "../ReactContext/myRestaurant/UseMyRestaurant";
+import { UpdateRestaurantGeneralInfoDTO } from "../dtos/restaurant/UpdateRestaurantGeneralInfo.dto";
 
 interface RestaurantCoverImagesProps {
   className?: string;
@@ -27,7 +28,9 @@ const RestaurantCoverImages: React.FC<RestaurantCoverImagesProps> = ({
   if (!token) throw new Error("No Token!");
 
   const onSubmit = async (data: EditRestaurantInfoForm) => {
-    const payload: UpdateRestaurantDTO = { generalInfo: { ...data } };
+    const payload: UpdateRestaurantDTO = new UpdateRestaurantDTO({
+      generalInfo: new UpdateRestaurantGeneralInfoDTO({ ...data }),
+    });
     await updateRestaurant(token, payload);
     await loadRestaurantData();
     setIsEditing(false);
@@ -70,24 +73,28 @@ const RestaurantCoverImages: React.FC<RestaurantCoverImagesProps> = ({
               className=""
               field="mainImgUrl"
               aspect="aspect-square"
+              isEditing={isEditing}
             />
             <RestaurantImgUploadZone
               titleName="Sub #1"
               className=""
               field="sub1ImgUrl"
               aspect="aspect-square"
+              isEditing={isEditing}
             />
             <RestaurantImgUploadZone
               titleName="Sub #2"
               className=""
               field="sub2ImgUrl"
               aspect="aspect-square"
+              isEditing={isEditing}
             />
             <RestaurantImgUploadZone
               titleName="Banner"
               className=" col-span-3"
               field="bannerImgUrl"
               aspect="aspect-[4/1]"
+              isEditing={isEditing}
             />
           </div>
         </section>

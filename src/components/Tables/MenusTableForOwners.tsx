@@ -10,11 +10,11 @@ interface MenusTableForOwnersProps {
 const MenusTableForOwners: React.FC<MenusTableForOwnersProps> = ({
   className,
 }) => {
-  const { menuList2 } = useMenus();
+  const { menuList } = useMenus();
 
   const tableColumnCss = "grid-cols-[80px_80px_1fr_300px_100px_150px_150px]";
 
-  if (!menuList2) return null;
+  if (!menuList) return null;
   return (
     <article className={`rounded-md ${className}`}>
       <MenuDashboardTableColumns
@@ -23,7 +23,7 @@ const MenusTableForOwners: React.FC<MenusTableForOwnersProps> = ({
       />
       {/* <div className="h-[590px] overflow-y-auto"> */}
       <div className="">
-        {Object.entries(menuList2).map(([cat, menus], index) => (
+        {Object.entries(menuList).map(([cat, menus], index) => (
           <Fragment key={index}>
             <div className="text-gray-500 text-sm font-semibold py-2 px-5">
               {cat} ({menus.length})

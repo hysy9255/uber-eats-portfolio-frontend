@@ -16,7 +16,7 @@ const ProfilePageModalShell: React.FC<ProfilePageModalShellProps> = ({
   formId,
 }) => {
   return (
-    <div className="fixed inset-0 bg-black/40 flex items-center justify-center">
+    <div className="fixed inset-0 z-300 bg-black/40 flex items-center justify-center">
       <div className="bg-white w-100 h-100 rounded-md flex flex-col justify-center items-center gap-y-6 relative">
         <RoundBorderXMarkButton
           onClick={onClickClose}

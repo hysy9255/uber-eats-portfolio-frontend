@@ -1,9 +1,14 @@
+import { useEffect } from "react";
 import OrderTracker from "../components/Icons/OrderTracker";
 import TrackOrderSummaryCard from "../components/TrackOrderSummaryCard";
 import { useClientOrder } from "../ReactContext/clientOrder/UseClientOrder";
 
 const TrackOrder = () => {
   const { order } = useClientOrder();
+
+  useEffect(() => {
+    console.log("result", order);
+  }, [order]);
 
   return (
     <main className={`max-w-[1000px] mx-auto`}>

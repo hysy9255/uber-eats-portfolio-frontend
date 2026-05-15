@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState, type ReactNode } from "react";
 import { MyRestaurantContext } from "./MyRestaurantContext";
 import { getToken } from "../../auth";
 import { getMyRestaurantForOwnerDashboard } from "../../api/restaurantApi";
-import type { GetMyRestaurantForOwnerDashboardDTO } from "../../dtos/GetMyRestaurantForOwnerDashboard.dto";
+import type { RestaurantViewDTO } from "../../dtos/RestaurantView.dto";
 
 interface MyRestaurantProviderProps {
   children: ReactNode;
@@ -12,8 +12,7 @@ interface MyRestaurantProviderProps {
 export const MyRestaurantProvider: React.FC<MyRestaurantProviderProps> = ({
   children,
 }) => {
-  const [restaurant, setRestaurant] =
-    useState<GetMyRestaurantForOwnerDashboardDTO>();
+  const [restaurant, setRestaurant] = useState<RestaurantViewDTO>();
   const token = getToken();
 
   if (!token) {
@@ -25,7 +24,7 @@ export const MyRestaurantProvider: React.FC<MyRestaurantProviderProps> = ({
     setRestaurant(restaurantData);
     localStorage.setItem(
       "restaurantId",
-      restaurantData.restaurantSummary.generalInfo.restaurantId
+      restaurantData.generalInfo.restaurantId
     );
   }, [token]);
 

@@ -5,11 +5,12 @@ import SubmitButton from "./Buttons/SubmitButton/SubmitButton";
 import RestaurantInfoInput from "./Inputs/RestaurantInfoInput";
 import TitleComp from "./TitleComp";
 import type { EditRestaurantInfoForm } from "../formDataTypes/restaurant/editRestaurantInfoForm.type";
-import type { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
+import { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
 import { updateRestaurant } from "../api/restaurantApi";
 import { useMyRestaurant } from "../ReactContext/myRestaurant/UseMyRestaurant";
 import { getToken } from "../auth";
 import { useState } from "react";
+import { UpdateRestaurantGeneralInfoDTO } from "../dtos/restaurant/UpdateRestaurantGeneralInfo.dto";
 
 interface RestaurantInformationProps {
   className?: string;
@@ -27,7 +28,9 @@ const RestaurantInformation: React.FC<RestaurantInformationProps> = ({
   if (!token) throw new Error("No Token!");
 
   const onSubmit = async (data: EditRestaurantInfoForm) => {
-    const payload: UpdateRestaurantDTO = { generalInfo: { ...data } };
+    const payload: UpdateRestaurantDTO = new UpdateRestaurantDTO({
+      generalInfo: new UpdateRestaurantGeneralInfoDTO({ ...data }),
+    });
     await updateRestaurant(token, payload);
     await loadRestaurantData();
     setIsEditing(false);

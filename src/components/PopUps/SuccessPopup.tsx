@@ -16,7 +16,7 @@ export default function SuccessDialog({
   if (!open) return null;
 
   return createPortal(
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
+    <div className="fixed inset-0 z-[500] flex items-center justify-center">
       <div className="absolute inset-0 bg-black/50" />
       <div
         role="dialog"
@@ -27,7 +27,7 @@ export default function SuccessDialog({
         <p className="mt-2 text-slate-600">{message}</p>
         <div className="mt-6 flex justify-end">
           <button
-            className="rounded-full bg-black px-4 py-2 text-white hover:bg-black/90 active:translate-y-px"
+            className="rounded-full bg-black px-4 py-2 text-white hover:bg-black/90 active:translate-y-px cursor-pointer"
             onClick={onConfirm}
           >
             OK

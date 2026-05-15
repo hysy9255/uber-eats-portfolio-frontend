@@ -13,16 +13,12 @@ import { useAddress } from "../../ReactContext/address/UseAddress";
 interface AddressListProps {
   handleClickEditAddress: (targetAddress: GetDeliveryAddressDTO) => void;
   closeAddressPopUp: () => void;
-  // refreshAddressData: () => void;
-  // addressList?: GetDeliveryAddressDTO[];
   handleClickAdd: () => void;
 }
 
 const AddressList: React.FC<AddressListProps> = ({
   handleClickEditAddress,
   closeAddressPopUp,
-  // refreshAddressData,
-  // addressList,
   handleClickAdd,
 }) => {
   const [selected, setSelected] = useState<GetDeliveryAddressDTO>();

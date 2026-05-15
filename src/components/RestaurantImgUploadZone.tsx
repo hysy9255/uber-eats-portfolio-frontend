@@ -1,5 +1,8 @@
 import { useRef, useState } from "react";
 import { useMyRestaurant } from "../ReactContext/myRestaurant/UseMyRestaurant";
+import { uploadImage } from "../utils/uploadImg";
+import { useFormContext } from "react-hook-form";
+import type { EditRestaurantInfoForm } from "../formDataTypes/restaurant/editRestaurantInfoForm.type";
 
 type RestaurantImageField =
   | "mainImgUrl"
@@ -10,6 +13,7 @@ type RestaurantImageField =
 interface RestaurantImgUploadZoneProps {
   className?: string;
   titleName?: string;
+  isEditing?: boolean;
   field: RestaurantImageField;
   aspect: string;
 }
@@ -19,10 +23,12 @@ const RestaurantImgUploadZone: React.FC<RestaurantImgUploadZoneProps> = ({
   titleName,
   field,
   aspect,
+  isEditing,
 }) => {
+  const methods = useFormContext<EditRestaurantInfoForm>();
   const { restaurant } = useMyRestaurant();
   const [preview, setPreview] = useState<string>(
-    () => restaurant.restaurantSummary.generalInfo[field]
+    () => restaurant.generalInfo[field]
   );
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -35,7 +41,8 @@ const RestaurantImgUploadZone: React.FC<RestaurantImgUploadZoneProps> = ({
     }
     const url = URL.createObjectURL(file);
     setPreview(url);
-    // const uploadedUrl = await uploadImage(file);
+    const uploadedUrl = await uploadImage(file);
+    methods.setValue(field, uploadedUrl);
     e.target.value = "";
   };
   return (
@@ -49,7 +56,13 @@ const RestaurantImgUploadZone: React.FC<RestaurantImgUploadZoneProps> = ({
         onChange={handleChange}
       />
       <div
-        className={`border-2 border-gray-300 ${aspect} rounded-md hover:cursor-pointer overflow-hidden`}
+        onClick={() => {
+          if (!isEditing) return;
+          inputRef.current?.click();
+        }}
+        className={`border-2 ${aspect} rounded-md hover:cursor-pointer overflow-hidden ${
+          isEditing ? "border-blue-300" : "border-gray-300"
+        }  `}
       >
         {preview ? (
           <img src={preview} className="w-full h-full object-cover" />

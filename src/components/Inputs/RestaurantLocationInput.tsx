@@ -1,9 +1,9 @@
 import { useFormContext, type FieldPath } from "react-hook-form";
-import type { EditLocationAndOperatingHoursForm } from "../../formDataTypes/restaurant/editLocationAndHoursForm.type";
+import type { EditLocationForm } from "../../formDataTypes/restaurant/editLocationForm.type";
 
 interface RestaurantLocationInputProps {
   title: string;
-  fieldName: FieldPath<EditLocationAndOperatingHoursForm>;
+  fieldName: FieldPath<EditLocationForm>;
   isRequired?: boolean;
   className?: string;
   isEditing?: boolean;

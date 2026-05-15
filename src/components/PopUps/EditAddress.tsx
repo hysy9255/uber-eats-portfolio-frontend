@@ -9,7 +9,7 @@ import { OtherIcon } from "../Icons/RegisterAddressIcons/OtherIcon";
 import { useEffect, useState } from "react";
 import type { EditDeliveryAddressForm } from "../../formDataTypes/deliveryAddress/editDeliveryAddressForm.type";
 import type { GetDeliveryAddressDTO } from "../../dto/GetDeliveryAddress.dto";
-import type { UpdateDeliveryAddressDTO } from "../../dto/UpdateDeliveryAddress.dto";
+import { UpdateDeliveryAddressDTO } from "../../dto/UpdateDeliveryAddress.dto";
 import { getToken } from "../../auth";
 import { updateDeliveryAddress } from "../../api/clientApi";
 import { useAddress } from "../../ReactContext/address/UseAddress";
@@ -55,10 +55,12 @@ const EditAddress: React.FC<EditAddressPopUpProps> = ({
 
   const editDeliveryAddressSubmit = async (data: EditDeliveryAddressForm) => {
     if (!targetAddress) return;
-    const payload: UpdateDeliveryAddressDTO = {
-      deliveryAddressId: targetAddress?.deliveryAddressId,
-      ...data,
-    };
+
+    const payload = new UpdateDeliveryAddressDTO(
+      targetAddress?.deliveryAddressId,
+      data
+    );
+
     await updateDeliveryAddress(token, payload);
     refreshAddressData();
     closePopUp();

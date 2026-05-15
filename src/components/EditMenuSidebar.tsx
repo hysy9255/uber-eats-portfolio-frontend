@@ -10,7 +10,8 @@ import { useMenus } from "../ReactContext/ownerDashboardMenus/UseMenus";
 import Dropdown from "./Dropdowns/Dropdown";
 
 const EditMenuSidebar = () => {
-  const { setEditMenuSidebarOpen, menuToEdit, handleUpdateDish } = useMenus();
+  const { setEditMenuSidebarOpen, menuToEdit, handleUpdateDish, loadMenus } =
+    useMenus();
   const [newPreview, setNewPreview] = useState<string | undefined>(
     menuToEdit?.dishImgUrl
   );
@@ -41,11 +42,18 @@ const EditMenuSidebar = () => {
   }, [categoryOption, methods]);
 
   const updateDishSubmit = async (data: EditDishForm) => {
-    if (!menuToEdit?.dishId) {
-      return;
+    try {
+      if (!menuToEdit?.dishId) {
+        return;
+      }
+      await handleUpdateDish(menuToEdit.dishId, data);
+      setShowSuccess(true);
+
+      await loadMenus();
+    } catch (e) {
+      console.error(e);
+      alert("Server error: please try again");
     }
-    await handleUpdateDish(menuToEdit?.dishId, data);
-    setShowSuccess(true);
   };
 
   const handleClose = () => {

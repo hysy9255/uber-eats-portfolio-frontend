@@ -2,10 +2,11 @@ import { useRef, useState } from "react";
 import { uploadImage } from "../utils/uploadImg";
 import CameraIcon from "./Icons/CameraIcon/CameraIcon";
 import LogoUploadPopUp from "./PopUps/LogoUploadPopUp";
-import type { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
+import { UpdateRestaurantDTO } from "../dtos/restaurant/UpdateRestaurant.dto";
 import { updateRestaurant } from "../api/restaurantApi";
 import { getToken } from "../auth";
 import { useMyRestaurant } from "../ReactContext/myRestaurant/UseMyRestaurant";
+import { UpdateRestaurantGeneralInfoDTO } from "../dtos/restaurant/UpdateRestaurantGeneralInfo.dto";
 
 const LogoUpload = () => {
   const token = getToken();
@@ -14,7 +15,7 @@ const LogoUpload = () => {
   const { restaurant, loadRestaurantData } = useMyRestaurant();
 
   const [logoPreview, setLogoPreview] = useState<string | undefined>(
-    () => restaurant.restaurantSummary.generalInfo.logo
+    () => restaurant.generalInfo.logo
   );
 
   const [fileSelected, setFileSelected] = useState<boolean>(false);
@@ -48,11 +49,10 @@ const LogoUpload = () => {
     }
 
     const uploadedUrl = await uploadImage(selectedFile);
-    const { restaurantId } = restaurant.restaurantSummary.generalInfo;
 
-    const payload: UpdateRestaurantDTO = {
-      generalInfo: { restaurantId, logo: uploadedUrl },
-    };
+    const payload: UpdateRestaurantDTO = new UpdateRestaurantDTO({
+      generalInfo: new UpdateRestaurantGeneralInfoDTO({ logo: uploadedUrl }),
+    });
     await updateRestaurant(token, payload);
     await loadRestaurantData();
     setFileSelected(false);
@@ -69,9 +69,9 @@ const LogoUpload = () => {
         onChange={handleChangeLogo}
       />
       <div className="border-2 border-gray-300 max-w-[200px] aspect-square flex items-center justify-center rounded-full overflow-hidden">
-        {restaurant.restaurantSummary.generalInfo.logo ? (
+        {restaurant.generalInfo.logo ? (
           <img
-            src={restaurant.restaurantSummary.generalInfo.logo}
+            src={restaurant.generalInfo.logo}
             className="w-full h-full object-cover"
           />
         ) : (

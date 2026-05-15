@@ -42,9 +42,13 @@ export const OwnerOrderProvider: React.FC<OwnerOrderProviderProps> = ({
 
   const loadOrdersData = useCallback(
     async (status?: OrderStatus) => {
-      const ordersData = await getOrdersForOwner(token, status);
-      setNumOfOrders(ordersData.length);
-      setOrders(() => filterOrdersByStatus(ordersData));
+      try {
+        const ordersData = await getOrdersForOwner(token, status);
+        setNumOfOrders(ordersData.length);
+        setOrders(() => filterOrdersByStatus(ordersData));
+      } catch {
+        console.log("failed to load orders data");
+      }
     },
     [token]
   );
@@ -71,16 +75,13 @@ export const OwnerOrderProvider: React.FC<OwnerOrderProviderProps> = ({
 
   useEffect(() => {
     const onNewOrderCreated = (payload: { restaurantId: string }) => {
-      if (
-        payload.restaurantId ===
-        restaurant.restaurantSummary.generalInfo.restaurantId
-      ) {
+      if (payload.restaurantId === restaurant.generalInfo.restaurantId) {
         loadOrdersData();
       }
     };
     socket.on("order.created", onNewOrderCreated);
     socket.emit("joinRestaurantRoom", {
-      restaurantId: restaurant.restaurantSummary.generalInfo.restaurantId,
+      restaurantId: restaurant.generalInfo.restaurantId,
     });
     return () => {
       socket.off("order.statusChanged", onNewOrderCreated);

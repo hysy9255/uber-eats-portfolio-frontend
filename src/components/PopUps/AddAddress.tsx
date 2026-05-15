@@ -48,12 +48,7 @@ const AddAddress: React.FC<AddAddressProps> = ({ closeAddAddress }) => {
     data: AddDeliveryAddressForm
   ) => {
     const payload: CreateDeliveryAddressDTO = { ...data, isDefault: false };
-    try {
-      await addDeliveryAddress(token, payload);
-    } catch (error) {
-      console.error(error);
-    }
-
+    await addDeliveryAddress(token, payload);
     refreshAddressData();
     closeAddAddress();
   };

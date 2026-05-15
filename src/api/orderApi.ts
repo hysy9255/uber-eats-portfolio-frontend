@@ -11,7 +11,7 @@ export const getOwnerDashboardPage = async (
   token: string,
   range: string
 ): Promise<GetOwnerDashBoardPageDTO> => {
-  const res = await fetch(`${API_BASE_URL}/orders/summary?range=${range}`, {
+  const res = await fetch(`${API_BASE_URL}/kpi/orders/summary?range=${range}`, {
     method: "GET",
     headers: {
       ...COMMON_HEADERS,
@@ -26,29 +26,12 @@ export const getOwnerDashboardPage = async (
 export const getMenuRankings = async (
   token: string
 ): Promise<MenuRankingDTO> => {
-  const res = await fetch(`${API_BASE_URL}/orders/ranking?limit=${5}`, {
+  const res = await fetch(`${API_BASE_URL}/kpi/orders/ranking?limit=${5}`, {
     method: "GET",
     headers: {
       ...COMMON_HEADERS,
       "jwt-token": token,
     },
-  });
-  if (!res.ok) throw new Error(await res.text());
-
-  return await res.json();
-};
-
-export const createOrder = async (
-  token: string,
-  payload: CreateOrderDTO
-): Promise<{ orderId: string }> => {
-  const res = await fetch(`${API_BASE_URL}/orders`, {
-    method: "POST",
-    headers: {
-      ...COMMON_HEADERS,
-      "jwt-token": token,
-    },
-    body: JSON.stringify(payload),
   });
   if (!res.ok) throw new Error(await res.text());
 
@@ -62,7 +45,9 @@ export const getOrdersForOwner = async (
   const params = new URLSearchParams();
   if (status) params.set("status", status);
   const res = await fetch(
-    `${API_BASE_URL}/orders${params.toString() ? `?${params.toString()}` : ""}`,
+    `${API_BASE_URL}/owner/orders${
+      params.toString() ? `?${params.toString()}` : ""
+    }`,
     {
       method: "GET",
       headers: {
@@ -71,7 +56,45 @@ export const getOrdersForOwner = async (
       },
     }
   );
+
+  if (!res.ok) {
+    const errorData = await res.json();
+    console.error("API Error:", errorData.message);
+    throw new Error(errorData.message);
+  }
+  return await res.json();
+};
+
+export const updateOrderStatus = async (
+  token: string,
+  orderId: string,
+  payload: UpdateOrderStatusDTO
+) => {
+  const res = await fetch(`${API_BASE_URL}/owner/orders/${orderId}/status`, {
+    method: "PATCH",
+    headers: {
+      ...COMMON_HEADERS,
+      "jwt-token": token,
+    },
+    body: JSON.stringify(payload),
+  });
   if (!res.ok) throw new Error(await res.text());
+};
+
+export const createOrder = async (
+  token: string,
+  payload: CreateOrderDTO
+): Promise<{ orderId: string }> => {
+  const res = await fetch(`${API_BASE_URL}/client/orders`, {
+    method: "POST",
+    headers: {
+      ...COMMON_HEADERS,
+      "jwt-token": token,
+    },
+    body: JSON.stringify(payload),
+  });
+  if (!res.ok) throw new Error(await res.text());
+
   return await res.json();
 };
 
@@ -79,7 +102,7 @@ export const getOrderForClient = async (
   token: string,
   orderId: string
 ): Promise<GetOrderForClientDTO> => {
-  const res = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+  const res = await fetch(`${API_BASE_URL}/client/orders/detail/${orderId}`, {
     method: "GET",
     headers: {
       ...COMMON_HEADERS,
@@ -93,7 +116,7 @@ export const getOrderForClient = async (
 export const getOnGoingOrdersForClient = async (
   token: string
 ): Promise<GetOrderForClientDTO[]> => {
-  const res = await fetch(`${API_BASE_URL}/orders/ongoing`, {
+  const res = await fetch(`${API_BASE_URL}/client/orders/ongoing`, {
     method: "GET",
     headers: {
       ...COMMON_HEADERS,
@@ -107,7 +130,7 @@ export const getOnGoingOrdersForClient = async (
 export const getOrderHistoryForClient = async (
   token: string
 ): Promise<GetOrderForClientDTO[]> => {
-  const res = await fetch(`${API_BASE_URL}/orders/history`, {
+  const res = await fetch(`${API_BASE_URL}/client/orders/history`, {
     method: "GET",
     headers: {
       ...COMMON_HEADERS,
@@ -116,20 +139,4 @@ export const getOrderHistoryForClient = async (
   });
   if (!res.ok) throw new Error(await res.text());
   return await res.json();
-};
-
-export const updateOrderStatus = async (
-  token: string,
-  orderId: string,
-  payload: UpdateOrderStatusDTO
-) => {
-  const res = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
-    method: "PATCH",
-    headers: {
-      ...COMMON_HEADERS,
-      "jwt-token": token,
-    },
-    body: JSON.stringify(payload),
-  });
-  if (!res.ok) throw new Error(await res.text());
 };

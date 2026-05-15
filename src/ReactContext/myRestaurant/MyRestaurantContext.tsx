@@ -1,8 +1,8 @@
 import { createContext } from "react";
-import type { GetMyRestaurantForOwnerDashboardDTO } from "../../dtos/GetMyRestaurantForOwnerDashboard.dto";
+import type { RestaurantViewDTO } from "../../dtos/RestaurantView.dto";
 
 type MyRestaurantContextValue = {
-  restaurant: GetMyRestaurantForOwnerDashboardDTO;
+  restaurant: RestaurantViewDTO;
   loadRestaurantData: () => Promise<void>;
 };
 

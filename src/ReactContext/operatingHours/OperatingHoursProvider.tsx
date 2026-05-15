@@ -17,7 +17,7 @@ export const OperatingHoursProvider: React.FC<OperatingHoursProviderProps> = ({
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const [hours, setHours] = useState<OperatingHoursDTO>(
-    () => restaurant.restaurantSummary.operatingHours
+    () => restaurant.operatingHours
   );
 
   useEffect(() => {

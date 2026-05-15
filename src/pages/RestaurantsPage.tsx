@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 import RestaurantCard from "../components/Cards/RestaurantCard";
-// import MainFooter from "../components/Footers/MainFooter";
 import { getRestaurantsPageView } from "../api/restaurantApi";
-import type { GetRestaurantsPageViewDTO } from "../dtos/GetRestaurantsPageView.dto";
+import type { GetRestaurantViewDTO } from "../dtos/RestaurantView.dto";
 
 const RestaurantsPage = () => {
   const [restaurantsPageView, setRestaurantsPageView] =
-    useState<GetRestaurantsPageViewDTO>();
+    useState<GetRestaurantViewDTO[]>();
 
   useEffect(() => {
     const load = async () => {
@@ -24,7 +23,7 @@ const RestaurantsPage = () => {
         min-[700px]:grid-cols-3 
         gap-2 p-2"
     >
-      {restaurantsPageView?.restaurantSummaries?.map((row, index) => (
+      {restaurantsPageView?.map((row, index) => (
         <RestaurantCard
           key={index}
           restaurantId={row.generalInfo.restaurantId}

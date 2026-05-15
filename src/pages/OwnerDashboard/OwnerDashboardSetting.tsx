@@ -18,7 +18,7 @@ const OwnerDashboardSetting = () => {
 
   useEffect(() => {
     methods.reset({
-      ...restaurant?.restaurantSummary.generalInfo,
+      ...restaurant?.generalInfo,
     });
   }, [methods, restaurant]);
 
